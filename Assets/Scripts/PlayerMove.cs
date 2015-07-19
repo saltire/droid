@@ -19,10 +19,12 @@ public class PlayerMove : MonoBehaviour
 		float h = Input.GetAxis ("Horizontal");
 		float v = Input.GetAxis ("Vertical");
 
-		if (h != 0f || v != 0f) {
-			rb.AddForce (h * speed, 0f, v * speed);
+		Vector3 inputDirection = new Vector3 (h, 0f, v);
 
-			targetRotation = Quaternion.LookRotation (new Vector3 (h, 0f, v));
+		if (inputDirection != Vector3.zero) {
+			rb.AddForce (inputDirection * speed);
+
+			targetRotation = Quaternion.LookRotation (inputDirection);
 		}
 		if (transform.rotation != targetRotation) {
 			transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);

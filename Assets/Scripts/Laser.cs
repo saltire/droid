@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Laser : MonoBehaviour
+public class Laser : Weapon
 {
 	public float laserSpeed = 20f;
+	public GameObject explosion;
 
 	void FixedUpdate ()
 	{
@@ -14,6 +15,9 @@ public class Laser : MonoBehaviour
 	{
 		if (other.tag == "Solid") {
 			Destroy (gameObject);
+		} else if (other.tag == "Droid" && other.gameObject != origin) {
+			Instantiate (explosion, other.transform.position, Quaternion.identity);
+			Destroy (other.gameObject);
 		}
 	}
 }

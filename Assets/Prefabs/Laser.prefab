@@ -122,7 +122,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc36d0e329f4564ea10fea569e21400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  origin: {fileID: 0}
   laserSpeed: 20
+  explosion: {fileID: 131104, guid: 7430e973772ca7140836ff2555303c04, type: 2}
 --- !u!136 &13645196
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -163,6 +165,10 @@ Prefab:
       propertyPath: laserSpeed
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: explosion
+      value: 
+      objectReference: {fileID: 131104, guid: 7430e973772ca7140836ff2555303c04, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 156622}

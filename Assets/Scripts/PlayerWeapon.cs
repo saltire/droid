@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PlayerWeapon : MonoBehaviour
 {
-	public GameObject weapon;
+	public Weapon weapon;
 
 	public float cooldownTime = .5f;
 	float lastFireTime = 0f;
@@ -18,7 +18,9 @@ public class PlayerWeapon : MonoBehaviour
 		if (fireReleased && Input.GetAxis ("Fire1") > 0 && Time.time > lastFireTime + cooldownTime) {
 			lastFireTime = Time.time;
 			fireReleased = false;
+
 			Instantiate (weapon, transform.position, transform.rotation * Quaternion.Euler (90, 0, 0));
+			weapon.origin = gameObject;
 		}
 	}
 }
