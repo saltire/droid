@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerMove : MonoBehaviour
 {
 	public float speed = 10f;
-	public float rotateSpeed = 20f;
+	public float rotateSpeed = 30f;
 	Rigidbody rb;
 	Quaternion targetRotation;
 
