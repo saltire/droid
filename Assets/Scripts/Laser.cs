@@ -12,7 +12,7 @@ public class Laser : MonoBehaviour
 
 	void OnTriggerEnter (Collider other)
 	{
-		if (other.gameObject.name == "Cube") {
+		if (other.tag == "Solid") {
 			Destroy (gameObject);
 		}
 	}

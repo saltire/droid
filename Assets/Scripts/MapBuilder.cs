@@ -9,11 +9,13 @@ public class MapBuilder : MonoBehaviour
 {
 	public TextAsset mapFile;
 
-	public GameObject Wall;
+	public GameObject Door;
 	public GameObject Floor;
+	public GameObject Wall;
 
+	static int[] doorChars = {1, 2};
+	static int[] floorChars = {3, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 30};
 	static int[] wallChars = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 28, 29};
-	static int[] floorChars = {1, 2, 3, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 30};
 
 	public void Build ()
 	{
@@ -40,22 +42,28 @@ public class MapBuilder : MonoBehaviour
 			if (tileType == 0) {
 				continue;
 			}
-
 			tileType -= 1;
 
 			int x = i % width;
 			int z = height - 1 - (i / width);
 
 			GameObject prefab = null;
-			if (wallChars.Contains (tileType)) {
-				prefab = Wall;
+			if (doorChars.Contains (tileType)) {
+				prefab = Door;
 			} else if (floorChars.Contains (tileType)) {
 				prefab = Floor;
+			} else if (wallChars.Contains (tileType)) {
+				prefab = Wall;
 			}
 
 			if (prefab != null) {
 				GameObject tile = (GameObject)Instantiate (prefab, new Vector3 (x, 0, z), Quaternion.identity);
 				tile.transform.parent = map.transform;
+
+				// tile-specific options
+				if (prefab == Door && tileType == 1) {
+					tile.transform.FindChild ("Cylinder").RotateAround (tile.transform.position + new Vector3 (.5f, .5f, .5f), Vector3.up, 90f);
+				}
 			}
 		}
 	}
