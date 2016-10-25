@@ -28,6 +28,6 @@ public class PlayerMove : MonoBehaviour
 		}
 		if (transform.rotation != targetRotation) {
 			transform.rotation = Quaternion.Lerp (transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
-		}
-	}
+        }
+    }
 }

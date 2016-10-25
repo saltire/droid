@@ -91,7 +91,7 @@ public class MapBuilder : MonoBehaviour
 			
 			// Tile-specific options
 			if (prefab == Door && tileType == 2) {
-				tile.transform.FindChild ("Cylinder").RotateAround (tile.transform.position + new Vector3 (.5f, .5f, .5f), Vector3.up, 90f);
+				tile.transform.FindChild ("Cylinder").RotateAround (tile.transform.position + new Vector3 (0, .5f, 0), Vector3.up, 90f);
 			}
 		}
 	}

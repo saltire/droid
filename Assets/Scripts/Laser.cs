@@ -16,8 +16,9 @@ public class Laser : Weapon
 		if (other.tag == "Solid") {
 			Destroy (gameObject);
 		} else if (other.tag == "Droid" && other.gameObject != origin) {
-			Instantiate (explosion, other.transform.position, Quaternion.identity);
+			Destroy (gameObject);
 			Destroy (other.gameObject);
+			Instantiate (explosion, other.transform.position, Quaternion.identity);
 		}
 	}
 }

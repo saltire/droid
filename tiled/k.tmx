@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-up" width="34" height="16" tilewidth="128" tileheight="128" nextobjectid="1">
- <tileset firstgid="1" name="droid" tilewidth="128" tileheight="128">
-  <image source="tiles4.gif" width="1024" height="512"/>
+<map version="1.0" orientation="orthogonal" renderorder="right-up" width="34" height="16" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="droid" tilewidth="32" tileheight="32" tilecount="32" columns="8">
+  <image source="tiles4.png" width="256" height="128"/>
  </tileset>
- <tileset firstgid="33" name="dot" tilewidth="128" tileheight="128">
-  <image source="dot.png" width="128" height="128"/>
+ <tileset firstgid="33" name="dot" tilewidth="32" tileheight="32" tilecount="1" columns="1">
+  <image source="dot.png" width="32" height="32"/>
  </tileset>
  <layer name="level" width="34" height="16">
   <data encoding="csv">
