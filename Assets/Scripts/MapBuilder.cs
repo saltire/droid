@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,33 +13,49 @@ public class MapBuilder : MonoBehaviour
 
 	GameObject map;
 
+	public GameObject Crate;
 	public GameObject Door;
 	public GameObject Floor;
 	public GameObject Wall;
-	static int[] doorChars = {2, 3};
-	static int[] floorChars = {4, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 31};
-	static int[] wallChars = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 29, 30};
+
+	Dictionary<int, GameObject> tileMap;
 
 	public GameObject Waypoint;
 	
-	int[] getLayerTileData (string layerName)
-	{
-		int[] tilesInt = {};
-		foreach (XmlNode layer in xmlDoc.GetElementsByTagName ("layer")) {
-			if (layer.Attributes ["name"].Value == layerName) {
-				foreach (XmlNode child in layer.ChildNodes) {
-					if (child.Name == "data") {
-						string[] tilesStr = child.InnerText.Split (new string[] {","}, System.StringSplitOptions.None);
-						tilesInt = tilesStr.Select (t => int.Parse (t)).ToArray ();
-					}
-				}
-			}
-		}
-		return tilesInt;
-	}
+	public void Build () {
+		tileMap = new Dictionary<int, GameObject>() {
+			{2, Door},
+			{3, Door},
+			{4, Floor},
+			{5, Wall},
+			{6, Wall},
+			{7, Wall},
+			{8, Wall},
+			{9, Wall},
+			{10, Wall},
+			{11, Wall},
+			{12, Wall},
+			{13, Wall},
+			{14, Wall},
+			{15, Wall},
+			{16, Wall},
+			{17, Floor},
+			{18, Floor},
+			{19, Floor},
+			{20, Floor},
+			{21, Floor},
+			{22, Floor},
+			{23, Floor},
+			{24, Floor},
+			{25, Floor},
+			{26, Floor},
+			{29, Crate},
+			{30, Crate},
+			{31, Floor},
+		};
 
-	public void Build ()
-	{
+		// Load the Tiled map file.
+
 		xmlDoc = new XmlDocument ();
 		xmlDoc.LoadXml (mapFile.text);
 
@@ -73,21 +90,29 @@ public class MapBuilder : MonoBehaviour
 			}
 		}
 
+		// Build the nav mesh.
+
 		UnityEditor.NavMeshBuilder.BuildNavMesh();
 	}
 
-	void PlaceTile (int x, int z, int tileType)
-	{
-		GameObject prefab = null;
-		if (doorChars.Contains (tileType)) {
-			prefab = Door;
-		} else if (floorChars.Contains (tileType)) {
-			prefab = Floor;
-		} else if (wallChars.Contains (tileType)) {
-			prefab = Wall;
+	int[] getLayerTileData (string layerName) {
+		int[] tilesInt = {};
+		foreach (XmlNode layer in xmlDoc.GetElementsByTagName ("layer")) {
+			if (layer.Attributes ["name"].Value == layerName) {
+				foreach (XmlNode child in layer.ChildNodes) {
+					if (child.Name == "data") {
+						string[] tilesStr = child.InnerText.Split (new string[] {","}, System.StringSplitOptions.None);
+						tilesInt = tilesStr.Select (t => int.Parse (t)).ToArray ();
+					}
+				}
+			}
 		}
-		
-		if (prefab != null) {
+		return tilesInt;
+	}
+
+	void PlaceTile (int x, int z, int tileType) {
+		if (tileMap.ContainsKey(tileType)) {
+			GameObject prefab = tileMap[tileType];
 			GameObject tile = (GameObject)Instantiate (prefab, new Vector3 (x, 0, z), Quaternion.identity);
 			tile.transform.parent = map.transform;
 			
@@ -98,8 +123,7 @@ public class MapBuilder : MonoBehaviour
 		}
 	}
 
-	void PlaceWaypoint (int x, int z)
-	{
+	void PlaceWaypoint (int x, int z) {
 		GameObject waypoint = (GameObject)Instantiate (Waypoint, new Vector3 (x, 0, z), Quaternion.identity);
 		waypoint.transform.parent = map.transform;
 	}
