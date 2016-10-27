@@ -72,6 +72,8 @@ public class MapBuilder : MonoBehaviour
 				}
 			}
 		}
+
+		UnityEditor.NavMeshBuilder.BuildNavMesh();
 	}
 
 	void PlaceTile (int x, int z, int tileType)
