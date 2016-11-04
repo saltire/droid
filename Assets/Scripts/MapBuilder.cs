@@ -1,14 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 
 public class MapBuilder : MonoBehaviour
 {
-	public TextAsset mapFile;
+	public DefaultAsset tmxFile;
 	XmlDocument xmlDoc;
 
 	GameObject map;
@@ -57,7 +56,7 @@ public class MapBuilder : MonoBehaviour
 		// Load the Tiled map file.
 
 		xmlDoc = new XmlDocument ();
-		xmlDoc.LoadXml (mapFile.text);
+		xmlDoc.LoadXml (File.ReadAllText(AssetDatabase.GetAssetPath(tmxFile)));
 
 		XmlNode mapNode = xmlDoc.GetElementsByTagName ("map") [0];
 		int width = int.Parse (mapNode.Attributes ["width"].Value);

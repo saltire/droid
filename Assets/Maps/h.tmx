@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-up" width="38" height="15" tilewidth="32" tileheight="32" nextobjectid="1">
- <tileset firstgid="1" source="droid.tsx"/>
- <tileset firstgid="33" source="dot.tsx"/>
+ <tileset firstgid="1" source="../../tiled/droid.tsx"/>
+ <tileset firstgid="33" source="../../tiled/dot.tsx"/>
  <layer name="tiles" width="38" height="15">
   <data encoding="csv">
 8,5,5,5,5,5,5,13,5,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
