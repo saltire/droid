@@ -74,7 +74,7 @@ public class MapBuilder : MonoBehaviour
 		// Place tiles from the map file.
 
 		int[] tiles = getLayerTileData ("tiles");
-		int[] waypoints = getLayerTileData ("waypoints");
+		int[] markers = getLayerTileData ("markers");
 
 		for (int z = 0; z < height; z++) {
 			for (int x = 0; x < width; x++) {
@@ -83,7 +83,7 @@ public class MapBuilder : MonoBehaviour
 				if (tiles [i] != 0) {
 					PlaceTile (x, z, tiles [i]);
 				}
-				if (waypoints [i] != 0) {
+				if (markers [i] == 33) {
 					PlaceWaypoint (x, z);
 				}
 			}
