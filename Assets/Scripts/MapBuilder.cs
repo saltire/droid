@@ -9,17 +9,16 @@ public class MapBuilder : MonoBehaviour
 {
 	public DefaultAsset tmxFile;
 	XmlDocument xmlDoc;
-
 	GameObject map;
+	Dictionary<int, GameObject> tileMap;
 
 	public GameObject Crate;
 	public GameObject Door;
 	public GameObject Floor;
 	public GameObject Wall;
 
-	Dictionary<int, GameObject> tileMap;
-
 	public GameObject Waypoint;
+	public GameObject Player;
 	
 	public void Build () {
 		tileMap = new Dictionary<int, GameObject>() {
@@ -84,7 +83,11 @@ public class MapBuilder : MonoBehaviour
 					PlaceTile (x, z, tiles [i]);
 				}
 				if (markers [i] == 33) {
-					PlaceWaypoint (x, z);
+					PlaceGameObject (Waypoint, x, z);
+				}
+				if (markers [i] == 34) {
+					GameObject player = PlaceGameObject(Player, x, z);
+					GameObject.FindWithTag("MainCamera").GetComponent<PlayerCamera>().player = player.transform;
 				}
 			}
 		}
@@ -122,8 +125,9 @@ public class MapBuilder : MonoBehaviour
 		}
 	}
 
-	void PlaceWaypoint (int x, int z) {
-		GameObject waypoint = (GameObject)Instantiate (Waypoint, new Vector3 (x, 0, z), Quaternion.identity);
-		waypoint.transform.parent = map.transform;
+	GameObject PlaceGameObject (GameObject prefab, int x, int z) {
+		GameObject obj = (GameObject)Instantiate (prefab, new Vector3 (x, 0.5f, z), Quaternion.identity);
+		obj.transform.parent = map.transform;
+		return obj;
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PlayerWeapon : MonoBehaviour
 {
@@ -19,8 +18,8 @@ public class PlayerWeapon : MonoBehaviour
 			lastFireTime = Time.time;
 			fireReleased = false;
 
-			Instantiate (weapon, transform.position, transform.rotation * Quaternion.Euler (90, 0, 0));
-			weapon.origin = gameObject;
+			Weapon weaponInstance = (Weapon)Instantiate (weapon, transform.position, transform.rotation * Quaternion.Euler (90, 0, 0));
+			weaponInstance.origin = gameObject;
 		}
 	}
 }
