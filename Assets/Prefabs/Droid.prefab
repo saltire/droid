@@ -25,6 +25,7 @@ GameObject:
   - 54: {fileID: 54000010725030478}
   - 195: {fileID: 195000010383609214}
   - 114: {fileID: 114000013529205170}
+  - 114: {fileID: 114000012060063040}
   m_Layer: 9
   m_Name: Droid
   m_TagString: Droid
@@ -258,6 +259,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   label: 000
+--- !u!114 &114000012060063040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010699975312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3aee9380ce4cbb4db983d832fbc0a06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!114 &114000013529205170
 MonoBehaviour:
   m_ObjectHideFlags: 1

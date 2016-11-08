@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
 public class Label : MonoBehaviour {
-	public string label;
-
-	void Start() {
+	public void SetLabel(string label) {
 		GetComponent<TextMesh>().text = label;
 	}
 

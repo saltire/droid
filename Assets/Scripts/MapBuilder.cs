@@ -7,7 +7,6 @@ using System.Xml;
 
 public class MapBuilder : MonoBehaviour {
 	public DefaultAsset tmxFile;
-	XmlDocument xmlDoc;
 	GameObject map;
 	Dictionary<int, GameObject> tileMap;
 
@@ -53,9 +52,7 @@ public class MapBuilder : MonoBehaviour {
 
 		// Load the Tiled map file.
 
-		xmlDoc = new XmlDocument();
-		xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GetAssetPath(tmxFile)));
-
+		XmlDocument xmlDoc = GetXmlDocument();
 		XmlNode mapNode = xmlDoc.GetElementsByTagName("map")[0];
 		int width = int.Parse(mapNode.Attributes["width"].Value);
 		int height = int.Parse(mapNode.Attributes["height"].Value);
@@ -71,8 +68,8 @@ public class MapBuilder : MonoBehaviour {
 
 		// Place tiles from the map file.
 
-		int[] tiles = getLayerTileData("tiles");
-		int[] markers = getLayerTileData("markers");
+		int[] tiles = getLayerTileData(xmlDoc, "tiles");
+		int[] markers = getLayerTileData(xmlDoc, "markers");
 
 		for (int z = 0; z < height; z++) {
 			for (int x = 0; x < width; x++) {
@@ -96,7 +93,13 @@ public class MapBuilder : MonoBehaviour {
 		UnityEditor.NavMeshBuilder.BuildNavMesh();
 	}
 
-	int[] getLayerTileData(string layerName) {
+	XmlDocument GetXmlDocument() {
+		XmlDocument xmlDoc = new XmlDocument();
+		xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GetAssetPath(tmxFile)));
+		return xmlDoc;
+	}
+
+	int[] getLayerTileData(XmlDocument xmlDoc, string layerName) {
 		int[] tilesInt = {};
 		foreach (XmlNode layer in xmlDoc.GetElementsByTagName("layer")) {
 			if (layer.Attributes["name"].Value == layerName) {
@@ -128,5 +131,19 @@ public class MapBuilder : MonoBehaviour {
 		GameObject obj = (GameObject)Instantiate(prefab, new Vector3(x, 0.5f, z), Quaternion.identity);
 		obj.transform.parent = map.transform;
 		return obj;
+	}
+
+	public List<int> GetDroidTypes() {
+		List<int> droidTypes = new List<int>();
+
+		foreach (XmlNode property in GetXmlDocument().GetElementsByTagName("properties")[0].ChildNodes) {
+			if (property.Attributes["name"].Value.Substring(0, 5) == "Droid") {
+				for (int i = 0; i < int.Parse(property.Attributes["value"].Value); i++) {
+					droidTypes.Add(int.Parse(property.Attributes["name"].Value.Substring(5, 3)));
+				}
+			}
+		}
+
+		return droidTypes;
 	}
 }
