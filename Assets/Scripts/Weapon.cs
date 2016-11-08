@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class Weapon : MonoBehaviour
-{
+public class Weapon : MonoBehaviour {
 	[HideInInspector]
-	public GameObject
-		origin;
+	public GameObject origin;
 }

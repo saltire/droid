@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class Explosion : MonoBehaviour
-{
+public class Explosion : MonoBehaviour {
 	public float explosionTime = 1f;
 
 	float elapsedTime = 0;
@@ -11,22 +9,20 @@ public class Explosion : MonoBehaviour
 	Color originalColor;
 	Color finalColor;
 
-	void Start ()
-	{
-		render = GetComponent<Renderer> ();
+	void Start() {
+		render = GetComponent<Renderer>();
 		originalColor = render.material.color;
 		finalColor = render.material.color;
 		finalColor.a = 0;
 	}
 	
-	void Update ()
-	{
+	void Update() {
 		elapsedTime += Time.deltaTime;
 
-		render.material.color = Color.Lerp (originalColor, finalColor, elapsedTime / explosionTime);
+		render.material.color = Color.Lerp(originalColor, finalColor, elapsedTime / explosionTime);
 
 		if (elapsedTime > explosionTime) {
-			Destroy (gameObject);
+			Destroy(gameObject);
 		}
 	}
 }
