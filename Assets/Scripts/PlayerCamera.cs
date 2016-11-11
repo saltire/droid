@@ -13,7 +13,9 @@ public class PlayerCamera : MonoBehaviour {
 	// Use LateUpdate in case any other effects happen this frame.
 	// Also enable rigidbody interpolation on the player to avoid jitter.
 	void LateUpdate() {
-		targetCameraPosition = player.position + cameraDistance;
-		transform.position = Vector3.Lerp(transform.position, targetCameraPosition, Time.deltaTime * cameraSpeed);
+		if (player) {
+			targetCameraPosition = player.position + cameraDistance;
+			transform.position = Vector3.Lerp(transform.position, targetCameraPosition, Time.deltaTime * cameraSpeed);
+		}
 	}
 }

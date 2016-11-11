@@ -28,6 +28,7 @@ GameObject:
   - 114: {fileID: 114000012060063040}
   - 114: {fileID: 114000012667085012}
   - 135: {fileID: 135000011055097162}
+  - 114: {fileID: 114000013567209978}
   m_Layer: 9
   m_Name: Droid
   m_TagString: Droid
@@ -138,7 +139,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011876768390}
   m_LocalRotation: {x: 0.38268343, y: -0, z: -0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 1.25, z: -0.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
   m_Children: []
@@ -283,7 +284,7 @@ TextMesh:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011876768390}
   m_Text: 000
-  m_OffsetZ: -0.25
+  m_OffsetZ: 0
   m_CharacterSize: 0.05
   m_LineSpacing: 1
   m_Anchor: 7
@@ -354,6 +355,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3d4b2b6626522c49a2bed5388c65218, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114000013567209978
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010699975312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 311c71e78c9f17a46b47d4e26ab6ced8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 2
+  explosion: {fileID: 131104, guid: 7430e973772ca7140836ff2555303c04, type: 2}
 --- !u!135 &135000010804511366
 SphereCollider:
   m_ObjectHideFlags: 1

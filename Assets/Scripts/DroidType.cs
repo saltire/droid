@@ -10,6 +10,8 @@ public class DroidType : MonoBehaviour {
 
 		GetComponentInChildren<Label>().SetLabel(type.ToString("D3"));
 
+		GetComponent<Health>().SetMaxHealth(type / 100);
+
 		if (type >= 200) {
 			GetComponent<DroidWeapon>().weapon = smallWeapon;
 		}

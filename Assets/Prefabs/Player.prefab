@@ -61,6 +61,7 @@ GameObject:
   - 54: {fileID: 54000011808784618}
   - 114: {fileID: 114000013479051510}
   - 114: {fileID: 114000010093640370}
+  - 114: {fileID: 114000013919361256}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -68,6 +69,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1000013598113704
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 4000010465878724}
+  - 114: {fileID: 114000013035801642}
+  m_Layer: 8
+  m_Name: HealthBar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4000010465878724
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013598113704}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 4000010709131300}
+  m_RootOrder: 2
 --- !u!4 &4000010709131300
 Transform:
   m_ObjectHideFlags: 1
@@ -75,12 +105,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000013026009096}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 2, y: 0.5, z: 2}
   m_LocalScale: {x: 0.6, y: 0.5, z: 0.6}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 4000011064084702}
   - {fileID: 4000013377170948}
+  - {fileID: 4000010465878724}
   m_Father: {fileID: 0}
   m_RootOrder: 0
 --- !u!4 &4000011064084702
@@ -270,6 +301,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d91193dcb9ca643ad53d33f522ecd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114000013035801642
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013598113704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f89c49584ef1ec41b6d0fac062eb13a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tick: {fileID: 1000011548326818, guid: 6730a47e19909934a9281d8cec32bcf1, type: 2}
+  width: 0.4
+  zOffset: -0.2
 --- !u!114 &114000013479051510
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -283,6 +328,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weapon: {fileID: 11438142, guid: 51cb3d5edb05e5f43bcdb20bd9a5f0f5, type: 2}
   cooldownTime: 0.5
+--- !u!114 &114000013919361256
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013026009096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 311c71e78c9f17a46b47d4e26ab6ced8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 5
+  explosion: {fileID: 131104, guid: 7430e973772ca7140836ff2555303c04, type: 2}
 --- !u!135 &135000011986947250
 SphereCollider:
   m_ObjectHideFlags: 1

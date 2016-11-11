@@ -2,7 +2,7 @@
 
 public class LaserBeam : Weapon {
 	public float laserSpeed = 20f;
-	public GameObject explosion;
+	public int damage = 1;
 
 	void FixedUpdate() {
 		transform.position += transform.up * Time.deltaTime * laserSpeed;
@@ -14,8 +14,7 @@ public class LaserBeam : Weapon {
 		}
 		else if ((other.tag == "Droid" || other.tag == "Player") && other.gameObject != origin) {
 			Destroy(gameObject);
-			Destroy(other.gameObject);
-			Instantiate(explosion, other.transform.position, Quaternion.identity);
+			other.GetComponent<Health>().Damage(damage);
 		}
 	}
 }
