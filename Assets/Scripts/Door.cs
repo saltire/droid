@@ -26,13 +26,13 @@ public class Door : MonoBehaviour {
 	}
 
 	void OnTriggerStay(Collider other) {
-		if (other.tag == "Droid")  {
+		if (other.tag == "Droid" || other.tag == "Player")  {
 			droids.Add(other);
 		}
 	}
 
 	void OnTriggerExit(Collider other) {
-		if (other.tag == "Droid")  {
+		if (other.tag == "Droid" || other.tag == "Player")  {
 			droids.Remove(other);
 		}
 	}

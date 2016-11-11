@@ -63,7 +63,7 @@ GameObject:
   - 114: {fileID: 114000010093640370}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Droid
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -270,7 +270,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d91193dcb9ca643ad53d33f522ecd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  label: 001
 --- !u!114 &114000013479051510
 MonoBehaviour:
   m_ObjectHideFlags: 1
