@@ -12,6 +12,7 @@ public class MapBuilder : MonoBehaviour {
 
 	public GameObject Crate;
 	public GameObject Door;
+	public GameObject Energizer;
 	public GameObject Floor;
 	public GameObject Wall;
 
@@ -39,7 +40,7 @@ public class MapBuilder : MonoBehaviour {
 			{18, Floor},
 			{19, Floor},
 			{20, Floor},
-			{21, Floor},
+			{21, Energizer},
 			{22, Floor},
 			{23, Floor},
 			{24, Floor},
