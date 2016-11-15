@@ -129,16 +129,16 @@ public class MapBuilder : MonoBehaviour {
 			tile.transform.parent = map.transform;
 
 			// Tile-specific options
+
 			if (tilePrefab == Door && tileType == 2) {
+				// Rotate door.
 				tile.transform.FindChild("Cylinder").RotateAround(tile.transform.position + new Vector3(0, 0.5f, 0), Vector3.up, 90f);
 			}
 
 			if (tilePrefab == Lift) {
-				if (markerType == 41) {
-					tile.tag = "LiftTriggerA";
-				}
-				else if (markerType == 42) {
-					tile.tag = "LiftTriggerB";
+				// Set lift shaft, to link it to other lifts.
+				if (markerType >= 41 && markerType <= 48) {
+					tile.GetComponent<Lift>().shaft = markerType - 41;
 				}
 			}
 		}

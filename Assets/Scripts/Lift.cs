@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 
 public class Lift : MonoBehaviour {
+	public int shaft;
+
 	public float cooldownTime = 0.5f;
 	float enableTime = 0f;
 	bool fireReleased = true;
 	List<GameObject> otherLifts;
 
 	void Start() {
-		otherLifts = new List<GameObject>(GameObject.FindGameObjectsWithTag(tag)).FindAll(lift => lift != gameObject);
+		otherLifts = new List<GameObject>(GameObject.FindGameObjectsWithTag("Lift")).FindAll(lift => lift.GetComponent<Lift>().shaft == shaft && lift != gameObject);
 	}
 
 	void FixedUpdate() {
