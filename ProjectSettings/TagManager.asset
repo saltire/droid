@@ -8,6 +8,8 @@ TagManager:
   - Solid
   - Waypoint
   - PlayerStart
+  - LiftTriggerA
+  - LiftTriggerB
   layers:
   - Default
   - TransparentFX

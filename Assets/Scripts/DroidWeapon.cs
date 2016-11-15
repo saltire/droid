@@ -2,15 +2,15 @@
 
 public class DroidWeapon : MonoBehaviour {
 	public Weapon weapon;
-	public float cooldownTime = .5f;
-	float lastFireTime = 0f;
+	public float cooldownTime = 0.75f;
+	float enableTime = 0f;
 
 	public void OnPlayerInRange(Collider player) {
-		if (weapon && (Time.time > lastFireTime + cooldownTime)) {
+		if (weapon && (Time.time > enableTime)) {
 			Vector3 playerDir = player.transform.position - transform.position;
 			RaycastHit hitInfo;
 			if (Physics.Raycast(transform.position, playerDir, out hitInfo, 10f) && hitInfo.collider.tag == "Player") {
-				lastFireTime = Time.time;
+				enableTime = Time.time + cooldownTime;
 
 				Weapon weaponInstance = (Weapon)Instantiate(weapon, transform.position, Quaternion.LookRotation(playerDir) * Quaternion.Euler(90, 0, 0));
 				weaponInstance.origin = gameObject;

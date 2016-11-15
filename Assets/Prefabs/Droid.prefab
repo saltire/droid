@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapon: {fileID: 0}
-  cooldownTime: 0.5
+  cooldownTime: 0.75
 --- !u!114 &114000013529205170
 MonoBehaviour:
   m_ObjectHideFlags: 1

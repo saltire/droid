@@ -19,8 +19,9 @@ public class MapBuilder : MonoBehaviour {
 	public float heightInterval = 20f;
 
 	Dictionary<int, GameObject> tileMap;
+	Dictionary<int, GameObject> markerMap;
 
-	void Start() {
+	public void Build() {
 		tileMap = new Dictionary<int, GameObject>() {
 			{2, Door},
 			{3, Door},
@@ -51,19 +52,12 @@ public class MapBuilder : MonoBehaviour {
 			{30, Crate},
 			{31, Floor},
 		};
-	}
 
-	public List<XmlDocument> GetLevels() {
-		string[] guids = AssetDatabase.FindAssets("", new string[] {"Assets/Maps"});
+		markerMap = new Dictionary<int, GameObject>() {
+			{33, Waypoint},
+			{34, PlayerStart},
+		};
 
-		return new List<XmlDocument>(guids.Select(guid => {
-			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GUIDToAssetPath(guid)));
-			return xmlDoc;
-		}));
-	}
-
-	public void Build() {
 		// Remove any old maps.
 		while (transform.childCount > 0) {
 			DestroyImmediate(transform.GetChild(0).gameObject);
@@ -92,20 +86,10 @@ public class MapBuilder : MonoBehaviour {
 		// Place tiles and objects from the map file.
 		int[] tiles = getLayerTileData(xmlDoc, "tiles");
 		int[] markers = getLayerTileData(xmlDoc, "markers");
-
 		for (int z = 0; z < height; z++) {
 			for (int x = 0; x < width; x++) {
 				int i = (height - z - 1) * width + x;
-
-				if (tiles [i] != 0) {
-					PlaceTile(tiles [i], map, x, z);
-				}
-				if (markers [i] == 33) {
-					PlaceGameObject(Waypoint, map, x, z);
-				}
-				if (markers [i] == 34) {
-					PlaceGameObject(PlayerStart, map, x, z);
-				}
+				PlaceTile(tiles[i], markers[i], map, x, z);
 			}
 		}
 
@@ -113,10 +97,14 @@ public class MapBuilder : MonoBehaviour {
 		map.transform.Translate(Vector3.up * yOffset);
 	}
 
-	XmlDocument GetXmlDocument(string tmxPath) {
-		XmlDocument xmlDoc = new XmlDocument();
-		xmlDoc.LoadXml(File.ReadAllText(tmxPath));
-		return xmlDoc;
+	public List<XmlDocument> GetLevels() {
+		string[] guids = AssetDatabase.FindAssets("", new string[] {"Assets/Maps"});
+
+		return new List<XmlDocument>(guids.Select(guid => {
+			XmlDocument xmlDoc = new XmlDocument();
+			xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GUIDToAssetPath(guid)));
+			return xmlDoc;
+		}));
 	}
 
 	int[] getLayerTileData(XmlDocument xmlDoc, string layerName) {
@@ -134,23 +122,32 @@ public class MapBuilder : MonoBehaviour {
 		return tilesInt;
 	}
 
-	void PlaceTile(int tileType, GameObject map, int x, int z) {
+	void PlaceTile(int tileType, int markerType, GameObject map, int x, int z) {
 		if (tileMap.ContainsKey(tileType)) {
-			GameObject prefab = tileMap[tileType];
-			GameObject tile = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
+			GameObject tilePrefab = tileMap[tileType];
+			GameObject tile = (GameObject)Instantiate(tilePrefab, new Vector3(x, 0, z), Quaternion.identity);
 			tile.transform.parent = map.transform;
 
 			// Tile-specific options
-			if (prefab == Door && tileType == 2) {
-				tile.transform.FindChild("Cylinder").RotateAround(tile.transform.position + new Vector3(0, .5f, 0), Vector3.up, 90f);
+			if (tilePrefab == Door && tileType == 2) {
+				tile.transform.FindChild("Cylinder").RotateAround(tile.transform.position + new Vector3(0, 0.5f, 0), Vector3.up, 90f);
+			}
+
+			if (tilePrefab == Lift) {
+				if (markerType == 41) {
+					tile.tag = "LiftTriggerA";
+				}
+				else if (markerType == 42) {
+					tile.tag = "LiftTriggerB";
+				}
 			}
 		}
-	}
 
-	GameObject PlaceGameObject (GameObject prefab, GameObject map, int x, int z) {
-		GameObject obj = (GameObject)Instantiate(prefab, new Vector3(x, 0.5f, z), Quaternion.identity);
-		obj.transform.parent = map.transform;
-		return obj;
+		if (markerMap.ContainsKey(markerType)) {
+			GameObject objPrefab = markerMap[markerType];
+			GameObject obj = (GameObject)Instantiate(objPrefab, new Vector3(x, 0.5f, z), Quaternion.identity);
+			obj.transform.parent = map.transform;
+		}
 	}
 
 	public List<int> GetDroidTypes(XmlDocument xmlDoc) {
