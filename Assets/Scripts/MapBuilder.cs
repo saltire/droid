@@ -6,24 +6,25 @@ using System.Linq;
 using System.Xml;
 
 public class MapBuilder : MonoBehaviour {
-	public DefaultAsset tmxFile;
-	GameObject map;
-	Dictionary<int, GameObject> tileMap;
-
 	public GameObject Crate;
 	public GameObject Door;
 	public GameObject Energizer;
 	public GameObject Floor;
+	public GameObject Lift;
 	public GameObject Wall;
 
+	public GameObject PlayerStart;
 	public GameObject Waypoint;
-	public GameObject Player;
 
-	public void Build() {
+	public float heightInterval = 20f;
+
+	Dictionary<int, GameObject> tileMap;
+
+	void Start() {
 		tileMap = new Dictionary<int, GameObject>() {
 			{2, Door},
 			{3, Door},
-			{4, Floor},
+			{4, Lift},
 			{5, Wall},
 			{6, Wall},
 			{7, Wall},
@@ -50,25 +51,45 @@ public class MapBuilder : MonoBehaviour {
 			{30, Crate},
 			{31, Floor},
 		};
+	}
 
-		// Load the Tiled map file.
+	public List<XmlDocument> GetLevels() {
+		string[] guids = AssetDatabase.FindAssets("", new string[] {"Assets/Maps"});
 
-		XmlDocument xmlDoc = GetXmlDocument();
+		return new List<XmlDocument>(guids.Select(guid => {
+			XmlDocument xmlDoc = new XmlDocument();
+			xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GUIDToAssetPath(guid)));
+			return xmlDoc;
+		}));
+	}
+
+	public void Build() {
+		// Remove any old maps.
+		while (transform.childCount > 0) {
+			DestroyImmediate(transform.GetChild(0).gameObject);
+		}
+
+		// Build a new map for each level.
+		List<XmlDocument> levels = GetLevels();
+		for (int i = 0; i < levels.Count; i++) {
+			BuildLevel(levels[i], heightInterval * i);
+		}
+
+		// Build the nav mesh.
+		UnityEditor.NavMeshBuilder.BuildNavMesh();
+	}
+
+	void BuildLevel(XmlDocument xmlDoc, float yOffset) {
+		// Load the Tiled map tag from the XML document.
 		XmlNode mapNode = xmlDoc.GetElementsByTagName("map")[0];
 		int width = int.Parse(mapNode.Attributes["width"].Value);
 		int height = int.Parse(mapNode.Attributes["height"].Value);
 
-		// Remove any old maps and create a new one.
-
-		Transform oldMap = transform.Find("Map");
-		if (oldMap != null) {
-			DestroyImmediate(oldMap.gameObject);
-		}
-		map = new GameObject("Map");
+		// Create a new map.
+		GameObject map = new GameObject(mapNode.SelectSingleNode("properties/property[@name=\"Name\"]/@value").Value);
 		map.transform.parent = transform;
 
-		// Place tiles from the map file.
-
+		// Place tiles and objects from the map file.
 		int[] tiles = getLayerTileData(xmlDoc, "tiles");
 		int[] markers = getLayerTileData(xmlDoc, "markers");
 
@@ -77,26 +98,24 @@ public class MapBuilder : MonoBehaviour {
 				int i = (height - z - 1) * width + x;
 
 				if (tiles [i] != 0) {
-					PlaceTile(x, z, tiles [i]);
+					PlaceTile(tiles [i], map, x, z);
 				}
 				if (markers [i] == 33) {
-					PlaceGameObject(Waypoint, x, z);
+					PlaceGameObject(Waypoint, map, x, z);
 				}
 				if (markers [i] == 34) {
-					GameObject player = PlaceGameObject(Player, x, z);
-					GameObject.FindWithTag("MainCamera").GetComponent<PlayerCamera>().player = player.transform;
+					PlaceGameObject(PlayerStart, map, x, z);
 				}
 			}
 		}
 
-		// Build the nav mesh.
-
-		UnityEditor.NavMeshBuilder.BuildNavMesh();
+		// Move the map up.
+		map.transform.Translate(Vector3.up * yOffset);
 	}
 
-	XmlDocument GetXmlDocument() {
+	XmlDocument GetXmlDocument(string tmxPath) {
 		XmlDocument xmlDoc = new XmlDocument();
-		xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GetAssetPath(tmxFile)));
+		xmlDoc.LoadXml(File.ReadAllText(tmxPath));
 		return xmlDoc;
 	}
 
@@ -115,7 +134,7 @@ public class MapBuilder : MonoBehaviour {
 		return tilesInt;
 	}
 
-	void PlaceTile(int x, int z, int tileType) {
+	void PlaceTile(int tileType, GameObject map, int x, int z) {
 		if (tileMap.ContainsKey(tileType)) {
 			GameObject prefab = tileMap[tileType];
 			GameObject tile = (GameObject)Instantiate(prefab, new Vector3(x, 0, z), Quaternion.identity);
@@ -128,17 +147,17 @@ public class MapBuilder : MonoBehaviour {
 		}
 	}
 
-	GameObject PlaceGameObject (GameObject prefab, int x, int z) {
+	GameObject PlaceGameObject (GameObject prefab, GameObject map, int x, int z) {
 		GameObject obj = (GameObject)Instantiate(prefab, new Vector3(x, 0.5f, z), Quaternion.identity);
 		obj.transform.parent = map.transform;
 		return obj;
 	}
 
-	public List<int> GetDroidTypes() {
+	public List<int> GetDroidTypes(XmlDocument xmlDoc) {
 		List<int> droidTypes = new List<int>();
 
-		foreach (XmlNode property in GetXmlDocument().GetElementsByTagName("properties")[0].ChildNodes) {
-			if (property.Attributes["name"].Value.Substring(0, 5) == "Droid") {
+		foreach (XmlNode property in xmlDoc.SelectNodes("map/properties/property")) {
+			if (property.Attributes["name"].Value.Contains("Droid")) {
 				for (int i = 0; i < int.Parse(property.Attributes["value"].Value); i++) {
 					droidTypes.Add(int.Parse(property.Attributes["name"].Value.Substring(5, 3)));
 				}

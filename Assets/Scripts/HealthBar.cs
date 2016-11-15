@@ -5,12 +5,6 @@ public class HealthBar : MonoBehaviour {
 	public float width = 0.5f;
 	public float zOffset = -0.2f;
 
-	float spacing;
-
-	void Start() {
-		spacing = width / (GetComponentInParent<Health>().maxHealth - 1);
-	}
-
 	void LateUpdate() {
 		transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 1, transform.rotation.eulerAngles.z);
 	}
@@ -22,6 +16,7 @@ public class HealthBar : MonoBehaviour {
 
 		transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 1, transform.rotation.eulerAngles.z);
 		Vector3 firstTickPosition = transform.position - new Vector3(width / 2, 0, 0);
+		float spacing = width / (GetComponentInParent<Health>().maxHealth - 1);
 
 		for (int i = 0; i < health; i++) {
 			GameObject tickInstance = (GameObject)Instantiate(tick, firstTickPosition + new Vector3(spacing * i, 0, zOffset), Quaternion.identity);
