@@ -17,20 +17,20 @@ public class DroidSpawner : MonoBehaviour {
 		GameObject.FindWithTag("MainCamera").GetComponent<PlayerCamera>().LookAtPlayer(player.transform);
 
 		// Spawn enemies on empty waypoints in each level.
-		foreach (XmlDocument xmlDoc in GetComponent<MapBuilder>().GetLevels()) {
+		foreach (XmlDocument xmlDoc in GetComponent<LevelBuilder>().GetMaps()) {
 			XmlNode mapNode = xmlDoc.GetElementsByTagName("map")[0];
-			string mapName = mapNode.SelectSingleNode("properties/property[@name=\"Name\"]/@value").Value;
-			GameObject map = transform.Find(mapName).gameObject;
+			string levelName = mapNode.SelectSingleNode("properties/property[@name=\"Name\"]/@value").Value;
+			GameObject level = transform.Find(levelName).gameObject;
 
 			List<GameObject> waypoints = new List<GameObject>();
-			foreach (Transform child in map.transform) {
+			foreach (Transform child in level.transform) {
 				if (child.tag == "Waypoint") {
 					waypoints.Add(child.gameObject);
 				}
 			}
 			List<int> placedPoints = new List<int>();
 
-			foreach (int droidType in GetComponent<MapBuilder>().GetDroidTypes(xmlDoc)) {
+			foreach (int droidType in GetComponent<LevelBuilder>().GetDroidTypes(xmlDoc)) {
 				if (placedPoints.Count == waypoints.Count) {
 					continue;
 				}
