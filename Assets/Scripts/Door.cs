@@ -10,6 +10,11 @@ public class Door : MonoBehaviour {
 	Vector3 openPosition;
 
 	void Start() {
+		// If there isn't a wall in the opening direction, rotate 180 degrees so the door opens the other way.
+		if (Physics.OverlapSphere(door.position + door.transform.up, 0.4f)[0].transform.parent.name != "Wall(Clone)") {
+			door.transform.Rotate(new Vector3(180, 0, 0));
+		}
+
 		closedPosition = door.position;
 		openPosition = door.position + door.transform.up;
 	}
