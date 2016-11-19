@@ -46,10 +46,12 @@ public class LevelBuilder : MonoBehaviour {
 			{20, Floor},
 			{21, Energizer},
 			{22, Floor},
-			{23, Floor},
-			{24, Floor},
+			{23, Crate},
+			{24, Wall},
 			{25, Floor},
 			{26, Floor},
+			{27, Wall},
+			{28, Wall},
 			{29, Crate},
 			{30, Crate},
 			{31, Floor},
@@ -66,13 +68,21 @@ public class LevelBuilder : MonoBehaviour {
 		}
 
 		// Build a new level for each map.
-		List<XmlDocument> maps = GetMaps();
-		for (int i = 0; i < maps.Count; i++) {
-			BuildLevel(maps[i], heightInterval * i);
+		List<XmlDocument> mapDocs = GetMapDocs();
+		for (int i = 0; i < mapDocs.Count; i++) {
+			BuildLevel(mapDocs[i], heightInterval * i);
 		}
 
 		// Build the nav mesh.
 		UnityEditor.NavMeshBuilder.BuildNavMesh();
+
+		// Connect lifts between levels.
+		ConnectLifts();
+
+		// Disable all levels.
+		foreach (Transform level in transform) {
+			level.gameObject.SetActive(false);
+		}
 	}
 
 	void BuildLevel(XmlDocument xmlDoc, float yOffset) {
@@ -80,10 +90,11 @@ public class LevelBuilder : MonoBehaviour {
 		XmlNode mapNode = xmlDoc.GetElementsByTagName("map")[0];
 		int width = int.Parse(mapNode.Attributes["width"].Value);
 		int height = int.Parse(mapNode.Attributes["height"].Value);
+		string name = mapNode.SelectSingleNode("properties/property[@name=\"Name\"]/@value").Value;
 
 		// Create a new level.
 		GameObject level = (GameObject)Instantiate(Level, transform);
-		level.name = mapNode.SelectSingleNode("properties/property[@name=\"Name\"]/@value").Value;
+		level.name = name;
 
 		// Place tiles and objects from the map file.
 		int[] tiles = getLayerTileData(xmlDoc, "tiles");
@@ -99,7 +110,7 @@ public class LevelBuilder : MonoBehaviour {
 		level.transform.Translate(Vector3.up * yOffset);
 	}
 
-	public List<XmlDocument> GetMaps() {
+	public List<XmlDocument> GetMapDocs() {
 		string[] guids = AssetDatabase.FindAssets("", new string[] {"Assets/Maps"});
 
 		return new List<XmlDocument>(guids.Select(guid => {
@@ -164,5 +175,12 @@ public class LevelBuilder : MonoBehaviour {
 		}
 
 		return droidTypes;
+	}
+
+	void ConnectLifts() {
+		List<Lift> lifts = new List<Lift>(GameObject.FindGameObjectsWithTag("Lift").Select(lift => lift.GetComponent<Lift>()));
+		foreach (Lift lift in lifts) {
+			lift.otherLifts = lifts.FindAll(otherLift => otherLift != lift && otherLift.shaft == lift.shaft);
+		}
 	}
 }

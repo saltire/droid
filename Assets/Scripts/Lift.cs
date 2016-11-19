@@ -3,15 +3,11 @@ using System.Collections.Generic;
 
 public class Lift : MonoBehaviour {
 	public int shaft;
+	public List<Lift> otherLifts;
 
 	public float cooldownTime = 0.5f;
 	float enableTime = 0f;
 	bool fireReleased = true;
-	List<GameObject> otherLifts;
-
-	void Start() {
-		otherLifts = new List<GameObject>(GameObject.FindGameObjectsWithTag("Lift")).FindAll(lift => lift.GetComponent<Lift>().shaft == shaft && lift != gameObject);
-	}
 
 	void FixedUpdate() {
 		if (!fireReleased && Input.GetAxis("Fire2") == 0) {
@@ -24,13 +20,15 @@ public class Lift : MonoBehaviour {
 			fireReleased = false;
 
 			if (otherLifts.Count > 0) {
-				GameObject otherLift = otherLifts[Random.Range(0, otherLifts.Count)];
-				otherLift.GetComponent<Lift>().TemporarilyDisable();
+				Lift otherLift = otherLifts[Random.Range(0, otherLifts.Count)];
+				otherLift.TemporarilyDisable();
 				TemporarilyDisable();
 
+				otherLift.transform.parent.gameObject.SetActive(true);
 				other.GetComponent<Rigidbody>().velocity = Vector3.zero;
 				other.transform.parent = otherLift.transform.parent;
 				other.transform.position = otherLift.transform.position + new Vector3(0, 0.5f, 0);
+				transform.parent.gameObject.SetActive(false);
 			}
 		}
 	}
