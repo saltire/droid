@@ -87,7 +87,7 @@ public class LevelBuilder : MonoBehaviour {
 
 	void BuildLevel(XmlDocument xmlDoc, float yOffset) {
 		// Load the Tiled map tag from the XML document.
-		XmlNode mapNode = xmlDoc.GetElementsByTagName("map")[0];
+		XmlNode mapNode = xmlDoc.SelectSingleNode("map");
 		int width = int.Parse(mapNode.Attributes["width"].Value);
 		int height = int.Parse(mapNode.Attributes["height"].Value);
 		string name = mapNode.SelectSingleNode("properties/property[@name=\"Name\"]/@value").Value;
@@ -103,6 +103,16 @@ public class LevelBuilder : MonoBehaviour {
 			for (int x = 0; x < width; x++) {
 				int i = (height - z - 1) * width + x;
 				PlaceTile(tiles[i], markers[i], level, x, z);
+			}
+		}
+
+		// Set the list of droid types.
+		DroidSpawner spawner = level.GetComponent<DroidSpawner>();
+		foreach (XmlNode property in mapNode.SelectNodes("properties/property")) {
+			if (property.Attributes["name"].Value.Contains("Droid")) {
+				for (int i = 0; i < int.Parse(property.Attributes["value"].Value); i++) {
+					spawner.droidTypes.Add(int.Parse(property.Attributes["name"].Value.Substring(5, 3)));
+				}
 			}
 		}
 
@@ -161,20 +171,6 @@ public class LevelBuilder : MonoBehaviour {
 			GameObject obj = (GameObject)Instantiate(objPrefab, new Vector3(x, 0.5f, z), Quaternion.identity);
 			obj.transform.parent = level.transform;
 		}
-	}
-
-	public List<int> GetDroidTypes(XmlDocument xmlDoc) {
-		List<int> droidTypes = new List<int>();
-
-		foreach (XmlNode property in xmlDoc.SelectNodes("map/properties/property")) {
-			if (property.Attributes["name"].Value.Contains("Droid")) {
-				for (int i = 0; i < int.Parse(property.Attributes["value"].Value); i++) {
-					droidTypes.Add(int.Parse(property.Attributes["name"].Value.Substring(5, 3)));
-				}
-			}
-		}
-
-		return droidTypes;
 	}
 
 	void ConnectLifts() {
