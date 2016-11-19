@@ -149,9 +149,9 @@ public class LevelBuilder : MonoBehaviour {
 			}
 
 			if (tilePrefab == Lift) {
-				// Set lift shaft, to link it to other lifts.
+				// Set lift index, to link it to other lifts.
 				if (markerType >= 41 && markerType <= 48) {
-					tile.GetComponent<Lift>().shaft = markerType - 41;
+					tile.GetComponent<Lift>().liftIndex = markerType - 41;
 				}
 			}
 		}
@@ -180,7 +180,7 @@ public class LevelBuilder : MonoBehaviour {
 	void ConnectLifts() {
 		List<Lift> lifts = new List<Lift>(GameObject.FindGameObjectsWithTag("Lift").Select(lift => lift.GetComponent<Lift>()));
 		foreach (Lift lift in lifts) {
-			lift.otherLifts = lifts.FindAll(otherLift => otherLift != lift && otherLift.shaft == lift.shaft);
+			lift.otherLifts = lifts.FindAll(otherLift => otherLift != lift && otherLift.liftIndex == lift.liftIndex);
 		}
 	}
 }

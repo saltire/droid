@@ -8,7 +8,7 @@ public class LevelBuilderEditor : Editor {
 
 		LevelBuilder script = (LevelBuilder)target;
 
-		if (GUILayout.Button("Build Level")) {
+		if (GUILayout.Button("Build Levels")) {
 			script.Build();
 		}
 	}
