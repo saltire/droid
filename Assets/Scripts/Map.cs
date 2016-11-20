@@ -48,16 +48,16 @@ public class Map : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!fireReleased && Input.GetAxisRaw("Fire2") == 0) {
+		if (!fireReleased && Input.GetAxisRaw("Use") == 0) {
 			fireReleased = true;
 		}
-		if (!moveReleased && Input.GetAxis("Vertical") == 0) {
+		if (!moveReleased && Input.GetAxisRaw("Vertical") == 0) {
 			moveReleased = true;
 		}
 
 		if (mapCamera.activeSelf) {
 			if (moveReleased) {
-				int direction = Math.Sign(Input.GetAxis("Vertical"));
+				int direction = Math.Sign(Input.GetAxisRaw("Vertical"));
 
 				if (direction != 0) {
 					moveReleased = false;
@@ -71,7 +71,7 @@ public class Map : MonoBehaviour {
 				}
 			}
 
-			if (fireReleased && Input.GetAxisRaw("Fire2") > 0) {
+			if (fireReleased && Input.GetAxisRaw("Use") > 0) {
 				foreach (Transform level in GameObject.Find("LevelBuilder").transform) {
 					if (level.name == lifts[currentLiftIndex][currentLiftPosition]) {
 						foreach (Lift otherLift in level.GetComponentsInChildren<Lift>()) {

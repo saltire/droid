@@ -8,11 +8,11 @@ public class PlayerWeapon : MonoBehaviour {
 	bool fireReleased = true;
 
 	void FixedUpdate() {
-		if (!fireReleased && Input.GetAxis("Fire1") == 0) {
+		if (!fireReleased && Input.GetAxis("Fire") == 0) {
 			fireReleased = true;
 		}
 
-		if (fireReleased && Input.GetAxis("Fire1") > 0 && Time.time > enableTime) {
+		if (fireReleased && Input.GetAxis("Fire") > 0 && Time.time > enableTime) {
 			enableTime = Time.time + cooldownTime;
 			fireReleased = false;
 
