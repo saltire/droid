@@ -1,13 +1,25 @@
 ﻿using UnityEngine;
 
 public class PlayerWeapon : MonoBehaviour {
-	public Weapon weapon;
+	public Weapon defaultWeapon;
+	public float defaultCooldownTime = 0.5f;
 
-	public float cooldownTime = .5f;
+	Weapon weapon;
+	float cooldownTime;
+
 	float enableTime = 0f;
 	bool fireReleased = true;
 
-	void FixedUpdate() {
+	void Start() {
+		SetWeapon(defaultWeapon, defaultCooldownTime);
+	}
+
+	public void SetWeapon(Weapon newWeapon, float newCooldownTime) {
+		weapon = newWeapon != null ? newWeapon : defaultWeapon;
+		cooldownTime = newCooldownTime > 0 ? newCooldownTime : defaultCooldownTime;
+	}
+
+	void Update() {
 		if (!fireReleased && Input.GetAxis("Fire") == 0) {
 			fireReleased = true;
 		}

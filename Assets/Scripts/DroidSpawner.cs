@@ -30,7 +30,7 @@ public class DroidSpawner : MonoBehaviour {
 
 			GameObject droid = (GameObject)Instantiate(Droid, waypoints[point].transform.position, Quaternion.identity);
 			droid.transform.parent =  waypoints[point].transform.parent;
-			droid.GetComponent<DroidType>().SetType(droidType);
+			droid.GetComponent<DroidType>().SetDroidType(droidType);
 		}
 	}
 }

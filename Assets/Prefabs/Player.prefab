@@ -74,7 +74,7 @@ GameObject:
   - 23: {fileID: 23000010344546244}
   m_Layer: 8
   m_Name: Capsule
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -398,8 +398,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12f87d7b150f73a408b1150c7340eba8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapon: {fileID: 11438142, guid: 51cb3d5edb05e5f43bcdb20bd9a5f0f5, type: 2}
-  cooldownTime: 0.5
+  defaultWeapon: {fileID: 11438142, guid: 51cb3d5edb05e5f43bcdb20bd9a5f0f5, type: 2}
+  defaultCooldownTime: 0.5
 --- !u!114 &114000013919361256
 MonoBehaviour:
   m_ObjectHideFlags: 1

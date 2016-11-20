@@ -30,7 +30,7 @@ public class Door : MonoBehaviour {
 		}
 	}
 
-	void OnTriggerStay(Collider other) {
+	void OnTriggerEnter(Collider other) {
 		if (other.tag == "Droid" || other.tag == "Player")  {
 			droids.Add(other);
 		}

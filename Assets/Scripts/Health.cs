@@ -41,15 +41,19 @@ public class Health : MonoBehaviour {
 		if (health <= 0) {
 			Destroy(gameObject);
 			Instantiate(explosion, transform.position, Quaternion.identity);
-
-			if (tag == "Droid") {
-				// Level should turn out the lights if there are no more droids left.
-				GetComponentInParent<Lights>().CheckDroidCount();
-			}
 		}
 	}
 
 	public bool IsAlive() {
 		return health > 0;
+	}
+
+	void OnDestroy() {
+		health = 0;
+
+		if (tag == "Droid") {
+			// Level should turn out the lights if there are no more droids left.
+			GetComponentInParent<Lights>().CheckDroidCount();
+		}
 	}
 }

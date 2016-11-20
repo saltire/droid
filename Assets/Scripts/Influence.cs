@@ -7,6 +7,7 @@ public class Influence : MonoBehaviour {
 
 	List<Material> materials = new List<Material>();
 	float holdTime = 0;
+	List<GameObject> droids = new List<GameObject>();
 
 	void Start() {
 		foreach (Renderer renderer in transform.FindChild("Body").GetComponentsInChildren<Renderer>()) {
@@ -30,6 +31,37 @@ public class Influence : MonoBehaviour {
 			foreach (Material material in materials) {
 				material.SetColor("_EmissionColor", color);
 			}
+		}
+	}
+
+	void FixedUpdate() {
+		if (holdTime > 0) {
+			droids = droids.FindAll(droid => !droid.Equals(null));
+
+			if (droids.Count > 0) {
+				GameObject droid = droids[0];
+				DroidType droidType = droid.gameObject.GetComponent<DroidType>();
+
+				int type = droidType.GetDroidType();
+				GetComponentInChildren<Label>().SetLabel(type);
+
+				DroidType.DroidStats stats = droidType.GetDroidStats(type);
+				GetComponent<PlayerWeapon>().SetWeapon(stats.weapon, stats.cooldownTime);
+
+				Destroy(droid);
+			}
+		}
+	}
+
+	void OnCollisionEnter(Collision collision) {
+		if (collision.gameObject.tag == "Droid")  {
+			droids.Add(collision.gameObject);
+		}
+	}
+
+	void OnCollisionExit(Collision collision) {
+		if (collision.gameObject.tag == "Droid")  {
+			droids.Remove(collision.gameObject);
 		}
 	}
 }

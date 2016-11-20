@@ -20,7 +20,7 @@ public class Map : MonoBehaviour {
 		new string[] {"Observation", "Bridge", "Research", "Stores", "Staterooms"},
 		new string[] {"Staterooms", "Upper Cargo", "Mid Cargo", "Shuttle Bay"},
 		new string[] {"Robo-stores"},
-		new string[] {"Research", "Stores", "Staterooms", "Repairs", "Quarters"},
+		new string[] {"Research", "Stores", "Staterooms", "Repairs", "Quarters", "Robo-stores"},
 		new string[] {"Bridge", "Research"},
 	};
 

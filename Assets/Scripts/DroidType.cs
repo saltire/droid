@@ -6,21 +6,40 @@ public class DroidType : MonoBehaviour {
 
 	int type = 1;
 
-	public void SetType(int typeNumber) {
+	public class DroidStats {
+		public Weapon weapon = null;
+		public float cooldownTime = 0;
+	};
+
+	public DroidStats GetDroidStats(int type) {
+		DroidStats stats = new DroidStats();
+
+		if (type == 200) {
+			stats.weapon = smallWeapon;
+			stats.cooldownTime = 1f;
+		}
+		else if (type == 300) {
+			stats.weapon = largeWeapon;
+			stats.cooldownTime = 0.75f;
+		}
+
+		return stats;
+	}
+
+	public int GetDroidType() {
+		return type;
+	}
+
+	public void SetDroidType(int typeNumber) {
 		type = typeNumber;
 
-		GetComponentInChildren<Label>().SetLabel(type.ToString("D3"));
+		GetComponentInChildren<Label>().SetLabel(type);
 
 		GetComponent<Health>().SetMaxHealth(type / 100);
 
+		DroidStats stats = GetDroidStats(type);
 		DroidWeapon droidWeapon = GetComponent<DroidWeapon>();
-		if (type == 200) {
-			droidWeapon.weapon = smallWeapon;
-			droidWeapon.cooldownTime = 1.5f;
-		}
-		else if (type == 300) {
-			droidWeapon.weapon = largeWeapon;
-			droidWeapon.cooldownTime = 0.75f;
-		}
+		droidWeapon.weapon = stats.weapon;
+		droidWeapon.cooldownTime = stats.cooldownTime;
 	}
 }
