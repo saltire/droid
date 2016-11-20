@@ -2,6 +2,7 @@
 
 public class DroidType : MonoBehaviour {
 	public Weapon smallWeapon;
+	public Weapon largeWeapon;
 
 	int type = 1;
 
@@ -12,8 +13,14 @@ public class DroidType : MonoBehaviour {
 
 		GetComponent<Health>().SetMaxHealth(type / 100);
 
-		if (type >= 200) {
-			GetComponent<DroidWeapon>().weapon = smallWeapon;
+		DroidWeapon droidWeapon = GetComponent<DroidWeapon>();
+		if (type == 200) {
+			droidWeapon.weapon = smallWeapon;
+			droidWeapon.cooldownTime = 1.5f;
+		}
+		else if (type == 300) {
+			droidWeapon.weapon = largeWeapon;
+			droidWeapon.cooldownTime = 0.75f;
 		}
 	}
 }

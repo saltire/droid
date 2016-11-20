@@ -3,6 +3,7 @@
 public class DroidWeapon : MonoBehaviour {
 	public Weapon weapon;
 	public float cooldownTime = 0.75f;
+
 	float enableTime = 0f;
 
 	public void OnPlayerInRange(Collider player) {
@@ -12,7 +13,7 @@ public class DroidWeapon : MonoBehaviour {
 			if (Physics.Raycast(transform.position, playerDir, out hitInfo, 10f) && hitInfo.collider.tag == "Player") {
 				enableTime = Time.time + cooldownTime;
 
-				Weapon weaponInstance = (Weapon)Instantiate(weapon, transform.position, Quaternion.LookRotation(playerDir) * Quaternion.Euler(90, 0, 0));
+				Weapon weaponInstance = (Weapon)Instantiate(weapon, transform.position, Quaternion.LookRotation(playerDir));
 				weaponInstance.origin = gameObject;
 			}
 		}

@@ -331,6 +331,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smallWeapon: {fileID: 11438142, guid: 51cb3d5edb05e5f43bcdb20bd9a5f0f5, type: 2}
+  largeWeapon: {fileID: 114000012094820412, guid: 04321ae23a0b18149866b3667746cb0b,
+    type: 2}
 --- !u!114 &114000012667085012
 MonoBehaviour:
   m_ObjectHideFlags: 1

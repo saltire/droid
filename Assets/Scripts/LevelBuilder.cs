@@ -20,6 +20,8 @@ public class LevelBuilder : MonoBehaviour {
 
 	public float heightInterval = 20f;
 
+	public List<int> defaultDroidTypes;
+
 	Dictionary<int, GameObject> tileMap;
 	Dictionary<int, GameObject> markerMap;
 
@@ -114,6 +116,9 @@ public class LevelBuilder : MonoBehaviour {
 					spawner.droidTypes.Add(int.Parse(property.Attributes["name"].Value.Substring(5, 3)));
 				}
 			}
+		}
+		if (spawner.droidTypes.Count == 0) {
+			spawner.droidTypes = defaultDroidTypes;
 		}
 
 		// Move the level up.

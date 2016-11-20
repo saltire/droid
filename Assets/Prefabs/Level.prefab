@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000012953765920}
   - 114: {fileID: 114000013323767938}
+  - 114: {fileID: 114000012807749500}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -34,12 +35,25 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000014030360314}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.801758, y: 21.6875, z: 5.551758}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!114 &114000012807749500
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000014030360314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 489e1a8236e1ba942b68cd005d6c66dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Droid: {fileID: 1000010699975312, guid: 919c52fae413d41488ea592b6cc0a4dc, type: 2}
+  droidTypes: 
 --- !u!114 &114000013323767938
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -16,7 +16,7 @@ public class PlayerWeapon : MonoBehaviour {
 			enableTime = Time.time + cooldownTime;
 			fireReleased = false;
 
-			Weapon weaponInstance = (Weapon)Instantiate(weapon, transform.position, transform.rotation * Quaternion.Euler(90, 0, 0));
+			Weapon weaponInstance = (Weapon)Instantiate(weapon, transform.position, transform.rotation);
 			weaponInstance.origin = gameObject;
 		}
 	}
