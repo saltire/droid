@@ -2,8 +2,7 @@
 using System;
 
 public class Map : MonoBehaviour {
-	public GameObject playerCamera;
-	public GameObject mapCamera;
+	public Camera mapCamera;
 
 	int currentLiftIndex;
 	int currentLiftPosition;
@@ -24,6 +23,10 @@ public class Map : MonoBehaviour {
 		new string[] {"Bridge", "Research"},
 	};
 
+	void Start() {
+		mapCamera.enabled = false;
+	}
+
 	public void ShowMap(Lift lift) {
 		// Pause game.
 		Time.timeScale = 0;
@@ -41,8 +44,7 @@ public class Map : MonoBehaviour {
 		currentLiftObject.GetComponent<Renderer>().material.SetColor("_EmissionColor", Color.white);
 
 		// Switch cameras.
-		playerCamera.SetActive(false);
-		mapCamera.SetActive(true);
+		mapCamera.enabled = true;
 
 		fireReleased = false;
 	}
@@ -55,7 +57,7 @@ public class Map : MonoBehaviour {
 			moveReleased = true;
 		}
 
-		if (mapCamera.activeSelf) {
+		if (mapCamera.enabled) {
 			if (moveReleased) {
 				int direction = Math.Sign(Input.GetAxisRaw("Vertical"));
 
@@ -98,8 +100,7 @@ public class Map : MonoBehaviour {
 				Time.timeScale = 1;
 
 				// Switch cameras.
-				playerCamera.SetActive(true);
-				mapCamera.SetActive(false);
+				mapCamera.enabled = false;
 			}
 		}
 	}

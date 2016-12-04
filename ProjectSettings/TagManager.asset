@@ -9,6 +9,7 @@ TagManager:
   - Waypoint
   - PlayerStart
   - Lift
+  - WireSegment
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - PlayerColliders
   - DroidColliders
   - Map
-  - 
+  - Minigame
   - 
   - 
   - 
