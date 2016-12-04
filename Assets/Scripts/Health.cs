@@ -6,9 +6,11 @@ public class Health : MonoBehaviour {
 
 	int health;
 	HealthBar healthBar;
+	Lights levelLights;
 
 	void Start() {
 		SetMaxHealth(maxHealth);
+		levelLights = GetComponentInParent<Lights>();
 	}
 
 	public void SetMaxHealth(int newMaxHealth) {
@@ -53,7 +55,7 @@ public class Health : MonoBehaviour {
 
 		if (tag == "Droid") {
 			// Level should turn out the lights if there are no more droids left.
-			GetComponentInParent<Lights>().CheckDroidCount();
+			levelLights.CheckDroidCount();
 		}
 	}
 }
