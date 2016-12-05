@@ -12,6 +12,11 @@ public class MinigameSide : MonoBehaviour {
 
 	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 
+	float offsetX = 19.5f;
+	float offsetY = -39;
+	float rowHeight = -11;
+	float xScale = 15;
+
 	Dictionary<string, GameObject> prefabs;
 
 	class PatternComponent {
@@ -165,11 +170,6 @@ public class MinigameSide : MonoBehaviour {
 		},
 	};
 
-	float offsetX = 19.5f;
-	float offsetY = -26;
-	float rowHeight = -12;
-	float xScale = 15;
-
 	public void Build() {
 		prefabs = new Dictionary<string, GameObject>() {
 			{"WireDeadEnd", WireDeadEnd},
@@ -213,7 +213,7 @@ public class MinigameSide : MonoBehaviour {
 		}
 	}
 
-	void Update() {
+	public void UpdatePowerComponents() {
 		foreach (PoweredComponent startSegment in startSegments) {
 			startSegment.TransmitPower();
 		}

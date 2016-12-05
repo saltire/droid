@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 
 public class MinigameLight : MonoBehaviour {
-	public float flickerSpeed = 20;
-
 	PoweredComponent[] sources = new PoweredComponent[2];
 	Material material;
 
+	int colorState = 0;
+	float flickerSpeed;
+
 	void Start() {
 		material = GetComponent<Renderer>().material;
+		flickerSpeed = GetComponentInParent<Minigame>().flickerSpeed;
 	}
 
 	public void FindSources() {
@@ -28,21 +30,25 @@ public class MinigameLight : MonoBehaviour {
 		}
 	}
 
-	void LateUpdate() {
-		bool powered0 = sources[0] != null && sources[0].color != Color.clear;
-		bool powered1 = sources[1] != null && sources[1].color != Color.clear;
+	public int UpdateColorState() {
+		bool[] powered = new bool[2] {
+			sources[0] != null && sources[0].color != Color.clear,
+			sources[1] != null && sources[1].color != Color.clear,
+		};
 
-		if (powered0 && powered1) {
+		if (powered[0] && powered[1]) {
 			material.SetColor("_EmissionColor", Color.Lerp(sources[0].color, sources[1].color, Mathf.PingPong(Time.unscaledTime * flickerSpeed, 1)));
+			colorState = 3;
 		}
-		else if (powered0) {
+		else if (powered[0]) {
 			material.SetColor("_EmissionColor", sources[0].color);
+			colorState = 1;
 		}
-		else if (powered1) {
+		else if (powered[1]) {
 			material.SetColor("_EmissionColor", sources[1].color);
+			colorState = 2;
 		}
-		else {
-			material.SetColor("_EmissionColor", Color.clear);
-		}
+
+		return colorState;
 	}
 }
