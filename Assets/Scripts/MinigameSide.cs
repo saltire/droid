@@ -6,6 +6,7 @@ public class MinigameSide : MonoBehaviour {
 	public Transform source;
 	public Color color = Color.yellow;
 
+	public GameObject WireDeadEnd;
 	public GameObject WireSegment;
 	public GameObject WireSplitter;
 
@@ -23,11 +24,12 @@ public class MinigameSide : MonoBehaviour {
 	List<List<PatternComponent>> patterns = new List<List<PatternComponent>>() {
 		// Straight
 		new List<PatternComponent>() {
-			new PatternComponent {prefab = "WireSegment", x = 4, xScale = 8}
+			new PatternComponent {prefab = "WireSegment", x = 4, xScale = 8},
 		},
 		// // Dead end
 		new List<PatternComponent>() {
-			new PatternComponent {prefab = "WireSegment", x = 3, xScale = 6}
+			new PatternComponent {prefab = "WireSegment", x = 3, xScale = 6},
+			new PatternComponent {prefab = "WireDeadEnd", x = 6, y = 0},
 		},
 		// Fork
 		new List<PatternComponent>() {
@@ -37,7 +39,9 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 6, y = 2, xScale = 4},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
 		},
 		// Fork closer to the end
 		new List<PatternComponent>() {
@@ -47,17 +51,22 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
 
 			new PatternComponent {prefab = "WireSegment", x = 2, y = 0, xScale = 4},
+			new PatternComponent {prefab = "WireDeadEnd", x = 4, y = 0},
 			new PatternComponent {prefab = "WireSegment", x = 2, y = 2, xScale = 4},
+			new PatternComponent {prefab = "WireDeadEnd", x = 4, y = 2},
 		},
 		// Fork with a dead end at the top
 		new List<PatternComponent>() {
 			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
 			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
 			new PatternComponent {prefab = "WireSegment", x = 5, y = 0, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 6, y = 0},
 			new PatternComponent {prefab = "WireSegment", x = 6, y = 2, xScale = 4},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
 		},
 		// Fork with a dead end at the bottom
 		new List<PatternComponent>() {
@@ -65,9 +74,12 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
 			new PatternComponent {prefab = "WireSegment", x = 6, y = 0, xScale = 4},
 			new PatternComponent {prefab = "WireSegment", x = 5, y = 2, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 6, y = 2},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
 		},
 		// Reverse fork
 		new List<PatternComponent>() {
@@ -77,6 +89,7 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 6, y = 1, xScale = 4},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
 		},
 		// Reverse fork closer to the end
 		new List<PatternComponent>() {
@@ -86,6 +99,7 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 7, y = 1, xScale = 2},
 
 			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
+			new PatternComponent {prefab = "WireDeadEnd", x = 4, y = 1},
 		},
 		// Ring, or a fork followed by a reverse fork
 		new List<PatternComponent>() {
@@ -97,7 +111,9 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 7, y = 1, xScale = 2},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
 		},
 		// Reverse fork followed by a fork
 		new List<PatternComponent>() {
@@ -110,6 +126,7 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
 		},
 		// Reverse branching fork
 		new List<PatternComponent>() {
@@ -122,6 +139,7 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
 		},
 		// Reverse fork with a branching fork below it
 		new List<PatternComponent>() {
@@ -139,8 +157,11 @@ public class MinigameSide : MonoBehaviour {
 			new PatternComponent {prefab = "WireSegment", x = 6, y = 5, xScale = 4},
 
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 3, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 3},
 			new PatternComponent {prefab = "WireSegment", x = 1, y = 5, xScale = 2},
+			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 5},
 		},
 	};
 
@@ -151,6 +172,7 @@ public class MinigameSide : MonoBehaviour {
 
 	public void Build() {
 		prefabs = new Dictionary<string, GameObject>() {
+			{"WireDeadEnd", WireDeadEnd},
 			{"WireSegment", WireSegment},
 			{"WireSplitter", WireSplitter}
 		};
@@ -182,18 +204,18 @@ public class MinigameSide : MonoBehaviour {
 		}
 	}
 
-	void Update() {
-		foreach (PoweredComponent startSegment in startSegments) {
-			startSegment.TransmitPower();
-		}
-	}
-
 	void PlacePattern(List<PatternComponent> pattern, int row) {
 		foreach (PatternComponent pc in pattern) {
 			GameObject comp = (GameObject)Instantiate(prefabs[pc.prefab], transform.position, Quaternion.identity);
 			comp.transform.parent = transform;
 			comp.transform.localPosition += new Vector3(pc.x * xScale + offsetX, (pc.y + row) * rowHeight + offsetY, 0);
 			comp.transform.localScale = Vector3.Scale(comp.transform.localScale, new Vector3(pc.xScale, 1, 1));
+		}
+	}
+
+	void Update() {
+		foreach (PoweredComponent startSegment in startSegments) {
+			startSegment.TransmitPower();
 		}
 	}
 }
