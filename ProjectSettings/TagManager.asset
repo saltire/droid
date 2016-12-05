@@ -10,6 +10,7 @@ TagManager:
   - PlayerStart
   - Lift
   - WireSegment
+  - Pulser
   layers:
   - Default
   - TransparentFX

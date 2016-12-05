@@ -22,7 +22,7 @@ GameObject:
   - 33: {fileID: 33000013973863644}
   - 65: {fileID: 65000010152958276}
   - 23: {fileID: 23000012971863088}
-  - 114: {fileID: 114000013796567538}
+  - 114: {fileID: 114000012526851666}
   m_Layer: 13
   m_Name: Light
   m_TagString: WireSegment
@@ -91,7 +91,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114000013796567538
+--- !u!114 &114000012526851666
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000010619813970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a7dcc8802d94f94ebbb7f3b3ea0f355, type: 3}
+  m_Script: {fileID: 11500000, guid: cfe4920b0b3d14e4db5bb1a9513b84ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 0, g: 0, b: 0, a: 0}
+  flickerSpeed: 20
