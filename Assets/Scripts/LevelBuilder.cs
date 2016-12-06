@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEditor.AI;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -76,7 +77,7 @@ public class LevelBuilder : MonoBehaviour {
 		}
 
 		// Build the nav mesh.
-		UnityEditor.NavMeshBuilder.BuildNavMesh();
+		NavMeshBuilder.BuildNavMesh();
 
 		// Connect lifts between levels.
 		ConnectLifts();
