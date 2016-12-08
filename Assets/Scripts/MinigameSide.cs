@@ -12,7 +12,7 @@ public class MinigameSide : MonoBehaviour {
 
 	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 
-	float offsetX = 19.5f;
+	float offsetX = -132.5f;
 	float offsetY = -39;
 	float rowHeight = -11;
 	float xScale = 15;
