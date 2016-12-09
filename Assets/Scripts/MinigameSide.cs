@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class MinigameSide : MonoBehaviour {
-	public Transform source;
 	public Color color = Color.yellow;
 
 	public GameObject WireDeadEnd;
 	public GameObject WireSegment;
 	public GameObject WireSplitter;
-
-	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 
 	float offsetX = -132.5f;
 	float offsetY = -39;
@@ -189,17 +186,12 @@ public class MinigameSide : MonoBehaviour {
 		}
 
 		// Set color of power source and (testing) pulsers.
-		source.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
 		foreach (Transform child in transform) {
+			if (child.name == "Source") {
+				child.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+			}
 			if (child.tag == "Pulser") {
 				child.GetComponent<PoweredComponent>().color = color;
-			}
-		}
-
-		// Build a list of wire segments connected to the power source.
-		foreach (Collider other in Physics.OverlapBox(source.position, new Vector3(source.localScale.x / 2 + 0.5f, source.localScale.y / 2, 0.5f))) {
-			if (other.transform != source && other.tag == "WireSegment") {
-				startSegments.Add(other.GetComponent<PoweredComponent>());
 			}
 		}
 	}
@@ -210,12 +202,6 @@ public class MinigameSide : MonoBehaviour {
 			comp.transform.parent = transform;
 			comp.transform.localPosition += new Vector3(pc.x * xScale + offsetX, (pc.y + row) * rowHeight + offsetY, 0);
 			comp.transform.localScale = Vector3.Scale(comp.transform.localScale, new Vector3(pc.xScale, 1, 1));
-		}
-	}
-
-	public void UpdatePowerComponents() {
-		foreach (PoweredComponent startSegment in startSegments) {
-			startSegment.TransmitPower();
 		}
 	}
 }

@@ -1,15 +1,24 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class Minigame : MonoBehaviour {
+	public float warmupLength = 1;
+	public float gameLength = 3;
+	public float cooldownLength = 1;
 	public float flickerSpeed = 20;
 
+	float startTime;
+
+	List<Transform> timers = new List<Transform>();
+	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 	MinigameSide[] sides;
 	MinigameLight[] lights;
 	Material topLightMaterial;
 
 	void Start() {
-		// Time.timeScale = 0;
+		Time.timeScale = 0;
+		startTime = Time.unscaledTime;
 
 		sides = GetComponentsInChildren<MinigameSide>();
 		lights = GetComponentsInChildren<MinigameLight>();
@@ -20,6 +29,21 @@ public class Minigame : MonoBehaviour {
 			side.Build();
 		}
 
+		foreach (Transform child in GetComponentsInChildren<Transform>()) {
+			if (child.name == "Timer") {
+				timers.Add(child);
+				child.localScale = new Vector3(0, 1, 1);
+			}
+			if (child.name == "Source") {
+				// Build a list of wire segments connected to each power source.
+				foreach (Collider other in Physics.OverlapBox(child.position, new Vector3(child.localScale.x / 2 + 0.5f, child.localScale.y / 2, 0.5f))) {
+					if (other.transform != child && other.tag == "WireSegment") {
+						startSegments.Add(other.GetComponent<PoweredComponent>());
+					}
+				}
+			}
+		}
+
 		// For each light, create references to connecting wires.
 		foreach (MinigameLight light in lights) {
 			light.FindSources();
@@ -27,41 +51,66 @@ public class Minigame : MonoBehaviour {
 	}
 
 	void Update() {
-		// Update the powered components on each side.
-		foreach (MinigameSide side in sides) {
-			side.UpdatePowerComponents();
-		}
+		float gameTime = Time.unscaledTime - startTime;
 
-		// Update the color and get the powered state of each light, then update the top light.
-		int solidScore = 0;
-		int flickerCount = 0;
-		foreach (MinigameLight light in lights) {
-			int colorState = light.UpdateColorState();
-
-			if (colorState == 1) {
-				solidScore -= 1;
-			}
-			if (colorState == 2) {
-				solidScore += 1;
-			}
-			if (colorState == 3) {
-				flickerCount += 1;
+		if (gameTime <= warmupLength) {
+			// Expand the timers.
+			foreach (Transform timer in timers) {
+				timer.localScale = new Vector3(gameTime / warmupLength, 1, 1);
 			}
 		}
+		else if (gameTime <= (warmupLength + gameLength)) {
+			// Shrink the timers.
+			foreach (Transform timer in timers) {
+				timer.localScale = new Vector3((warmupLength + gameLength - gameTime) / gameLength, 1, 1);
+			}
 
-		// Possible scores if all flickering lights go to player 1 or player 2, respectively.
-		int[] flickerScores = new int[] {
-			Math.Sign(solidScore - flickerCount),
-			Math.Sign(solidScore + flickerCount),
-		};
+			// Update the powered components.
+			UpdatePowerComponents();
 
-		if (flickerScores[0] == flickerScores[1]) {
-			// Only one possible outcome regardless of who gets the flickering lights.
-			topLightMaterial.SetColor("_EmissionColor", GetColorFromScore(solidScore));
+			// Update the color and get the powered state of each light, then update the top light.
+			int solidScore = 0;
+			int flickerCount = 0;
+			foreach (MinigameLight light in lights) {
+				int colorState = light.UpdateColorState();
+
+				if (colorState == 1) {
+					solidScore -= 1;
+				}
+				if (colorState == 2) {
+					solidScore += 1;
+				}
+				if (colorState == 3) {
+					flickerCount += 1;
+				}
+			}
+
+			// Possible scores if all flickering lights go to player 1 or player 2, respectively.
+			int[] flickerScores = new int[] {
+				Math.Sign(solidScore - flickerCount),
+				Math.Sign(solidScore + flickerCount),
+			};
+
+			if (flickerScores[0] == flickerScores[1]) {
+				// Only one possible outcome regardless of who gets the flickering lights.
+				topLightMaterial.SetColor("_EmissionColor", GetColorFromScore(solidScore));
+			}
+			else {
+				// Two possible outcomes; flicker top light between the two.
+				topLightMaterial.SetColor("_EmissionColor", Color.Lerp(GetColorFromScore(flickerScores[0]), GetColorFromScore(flickerScores[1]), Mathf.PingPong(Time.unscaledTime * flickerSpeed, 1)));
+			}
 		}
-		else {
-			// Two possible outcomes; flicker top light between the two.
-			topLightMaterial.SetColor("_EmissionColor", Color.Lerp(GetColorFromScore(flickerScores[0]), GetColorFromScore(flickerScores[1]), Mathf.PingPong(Time.unscaledTime * flickerSpeed, 1)));
+		else if (gameTime <= (warmupLength + gameLength + cooldownLength)) {
+			// Remove the timers.
+			foreach (Transform timer in timers) {
+				timer.localScale = new Vector3(0, 1, 1);
+			}
+		}
+	}
+
+	void UpdatePowerComponents() {
+		foreach (PoweredComponent startSegment in startSegments) {
+			startSegment.TransmitPower();
 		}
 	}
 
