@@ -14,11 +14,11 @@ public class PoweredComponent : MonoBehaviour {
 		}
 	}
 
-	List<PoweredComponent> GetAdjacentComponents(bool forward) {
+	public List<PoweredComponent> GetAdjacentComponents(bool forward) {
 		List<PoweredComponent> adjacents = new List<PoweredComponent>();
 		foreach (Collider other in Physics.OverlapBox(transform.position + new Vector3(transform.localScale.x / 2 * (forward ? 1 : -1), 0, 0), new Vector3(0.5f, transform.localScale.y / 2, 0.5f))) {
 			PoweredComponent powered = other.GetComponent<PoweredComponent>();
-			if (other.transform != transform && powered != null) {
+			if (powered != this && powered != null) {
 				adjacents.Add(powered);
 			}
 		}
