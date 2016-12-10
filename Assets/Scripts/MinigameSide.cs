@@ -7,6 +7,7 @@ public class MinigameSide : MonoBehaviour {
 	public Color color = Color.yellow;
 	public int pulserCount = 5;
 	public bool computerPlayer = false;
+	public float playerMoveCooldown = 0.1f;
 	public float aiActionCooldown = 0.1f;
 
 	List<PoweredComponent> startSegments = new List<PoweredComponent>();
@@ -23,8 +24,8 @@ public class MinigameSide : MonoBehaviour {
 	float pulserLength;
 
 	bool fireReleased = false;
-	bool moveReleased = true;
-	float aiCooldownTime = 0;
+	float playerMoveCooldownTime = 0;
+	float aiActionCooldownTime = 0;
 
 	public List<PoweredComponent> Build() {
 		pulserLength = GetComponentInParent<Minigame>().pulserLength;
@@ -88,7 +89,7 @@ public class MinigameSide : MonoBehaviour {
 	}
 
 	void DoAIAction() {
-		if (currentPulser == null || aiCooldownTime > Time.unscaledTime) {
+		if (currentPulser == null || aiActionCooldownTime > Time.unscaledTime) {
 			return;
 		}
 
@@ -128,7 +129,7 @@ public class MinigameSide : MonoBehaviour {
 			UsePulser();
 		}
 
-		aiCooldownTime = Time.unscaledTime + aiActionCooldown;
+		aiActionCooldownTime = Time.unscaledTime + aiActionCooldown;
 	}
 
 	void DoPlayerAction() {
@@ -136,22 +137,18 @@ public class MinigameSide : MonoBehaviour {
 			return;
 		}
 
-		if (!fireReleased && Input.GetAxisRaw("Use") == 0) {
-			fireReleased = true;
-		}
-		if (!moveReleased && Input.GetAxisRaw("Vertical") == 0) {
-			moveReleased = true;
-		}
-
-		if (moveReleased) {
+		if (playerMoveCooldownTime < Time.unscaledTime) {
 			int direction = Math.Sign(Input.GetAxisRaw("Vertical"));
 
 			if (direction != 0) {
 				MovePulser(direction);
-				moveReleased = false;
+				playerMoveCooldownTime = Time.unscaledTime + playerMoveCooldown;
 			}
 		}
 
+		if (!fireReleased && Input.GetAxisRaw("Use") == 0) {
+			fireReleased = true;
+		}
 		if (fireReleased && Input.GetAxisRaw("Use") > 0) {
 			if (GetCurrentSegment() != null) {
 				UsePulser();
