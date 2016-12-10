@@ -6,6 +6,7 @@ public class Minigame : MonoBehaviour {
 	public float warmupLength = 1;
 	public float gameLength = 8;
 	public float cooldownLength = 1;
+	public float pulserLength = 4;
 	public float flickerSpeed = 20;
 
 	float startTime;
@@ -70,6 +71,20 @@ public class Minigame : MonoBehaviour {
 			// Remove the timers.
 			foreach (Transform timer in timers) {
 				timer.localScale = new Vector3(0, 1, 1);
+			}
+
+			// Remove all activated pulsers in the order they were placed, updating the power grid after each.
+			List<PoweredComponent> pulsers = new List<PoweredComponent>();
+			foreach (PoweredComponent powered in GetComponentsInChildren<PoweredComponent>()) {
+				if (powered.tag == "Pulser" && powered.IsPowered()) {
+					pulsers.Add(powered);
+				}
+			}
+			pulsers.Sort((a, b) => Math.Sign(a.GetTimeRemaining() - b.GetTimeRemaining()));
+			foreach (PoweredComponent pulser in pulsers) {
+				DestroyImmediate(pulser.gameObject);
+				UpdatePowerComponents();
+				UpdateLights();
 			}
 		}
 	}

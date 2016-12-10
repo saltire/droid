@@ -13,7 +13,8 @@ public class MinigameSide : MonoBehaviour {
 	public GameObject WireSplitter;
 
 	List<PoweredComponent> startSegments = new List<PoweredComponent>();
-	Stack<GameObject> unusedPulsers = new Stack<GameObject>();
+	Stack<PoweredComponent> unusedPulsers = new Stack<PoweredComponent>();
+	PoweredComponent currentPulser;
 
 	float offsetX = -132.5f;
 	float offsetY = -38;
@@ -22,8 +23,7 @@ public class MinigameSide : MonoBehaviour {
 
 	float pulserOffsetX = -123;
 	float pulserSpacing = 13;
-
-	GameObject currentPulser;
+	float pulserLength;
 
 	bool fireReleased = false;
 	bool moveReleased = true;
@@ -182,6 +182,8 @@ public class MinigameSide : MonoBehaviour {
 	};
 
 	public List<PoweredComponent> Build() {
+		pulserLength = GetComponentInParent<Minigame>().pulserLength;
+
 		prefabs = new Dictionary<string, GameObject>() {
 			{"WireDeadEnd", WireDeadEnd},
 			{"WireSegment", WireSegment},
@@ -230,7 +232,7 @@ public class MinigameSide : MonoBehaviour {
 			GameObject pulser = (GameObject)Instantiate(Pulser, transform.position, Quaternion.Euler(0, 0, -90));
 			pulser.transform.parent = transform;
 			pulser.transform.localPosition += new Vector3(pulserOffsetX + pulserSpacing * i, offsetY - (rowHeight * 2), 0);
-			unusedPulsers.Push(pulser);
+			unusedPulsers.Push(pulser.GetComponent<PoweredComponent>());
 		}
 
 		return startSegments;
@@ -255,7 +257,7 @@ public class MinigameSide : MonoBehaviour {
 				moveReleased = false;
 
 				// Get a list of open segments, and the current segment that the pulser is on.
-				List<PoweredComponent> openSegments = startSegments.FindAll(segment => segment.GetAdjacentComponents(false).FindAll(adj => adj.tag == "Pulser" && adj.color != Color.clear).Count == 0);
+				List<PoweredComponent> openSegments = startSegments.FindAll(segment => segment.GetAdjacentComponents(false).FindAll(adj => adj.tag == "Pulser" && adj.IsPowered()).Count == 0);
 				int wireIndex = -1;
 				foreach (Collider other in Physics.OverlapSphere(currentPulser.GetComponent<CapsuleCollider>().transform.position, 1)) {
 					PoweredComponent powered = other.GetComponent<PoweredComponent>();
@@ -279,7 +281,7 @@ public class MinigameSide : MonoBehaviour {
 		if (fireReleased && Input.GetAxisRaw("Use") > 0) {
 			if (currentPulser != null) {
 				// Activate the current pulser and get the next one.
-				currentPulser.GetComponent<PoweredComponent>().color = color;
+				currentPulser.ActivatePulser(color, pulserLength);
 				NextPulser();
 				fireReleased = false;
 			}

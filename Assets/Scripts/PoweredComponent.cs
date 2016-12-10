@@ -5,9 +5,15 @@ using System.Linq;
 public class PoweredComponent : MonoBehaviour {
 	public Color color;
 
+	float expiryTime = 0;
+
+	public bool IsPowered() {
+		return color != Color.clear;
+	}
+
 	public void TransmitPower() {
 		List<PoweredComponent> sources = GetAdjacentComponents(false);
-		color = (sources.Count > 0 && sources[0].color != Color.clear && sources.All(source => source.color == sources[0].color)) ? sources[0].color : Color.clear;
+		color = (sources.Count > 0 && sources[0].IsPowered() && sources.All(source => source.color == sources[0].color)) ? sources[0].color : Color.clear;
 
 		foreach (PoweredComponent dest in GetAdjacentComponents(true)) {
 			dest.TransmitPower();
@@ -23,6 +29,21 @@ public class PoweredComponent : MonoBehaviour {
 			}
 		}
 		return adjacents;
+	}
+
+	public void ActivatePulser(Color newColor, float length) {
+		color = newColor;
+		expiryTime = Time.unscaledTime + length;
+	}
+
+	public float GetTimeRemaining() {
+		return expiryTime - Time.unscaledTime;
+	}
+
+	void Update() {
+		if (expiryTime > 0 && expiryTime <= Time.unscaledTime) {
+			Destroy(gameObject);
+		}
 	}
 
 	void LateUpdate () {

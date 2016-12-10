@@ -32,8 +32,8 @@ public class MinigameLight : MonoBehaviour {
 
 	public int UpdateColorState() {
 		bool[] powered = new bool[2] {
-			sources[0] != null && sources[0].color != Color.clear,
-			sources[1] != null && sources[1].color != Color.clear,
+			sources[0] != null && sources[0].IsPowered(),
+			sources[1] != null && sources[1].IsPowered(),
 		};
 
 		if (powered[0] && powered[1]) {
