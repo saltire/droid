@@ -51,4 +51,8 @@ public class MinigameLight : MonoBehaviour {
 
 		return colorState;
 	}
+
+	public Color GetColor() {
+		return material.GetColor("_EmissionColor");
+	}
 }

@@ -10,12 +10,15 @@ public class Minigame : MonoBehaviour {
 	public float flickerSpeed = 20;
 
 	float startTime;
+	bool cooldownDone = false;
+	bool gameoverDone = false;
 
-	List<Transform> timers = new List<Transform>();
-	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 	MinigameSide[] sides;
 	MinigameLight[] lights;
 	Material topLightMaterial;
+	List<PoweredComponent> startSegments = new List<PoweredComponent>();
+	List<PoweredComponent> pulsers;
+	List<Transform> timers = new List<Transform>();
 
 	void Start() {
 		Time.timeScale = 0;
@@ -30,6 +33,7 @@ public class Minigame : MonoBehaviour {
 			var sideSegments = side.Build();
 			startSegments.AddRange(sideSegments);
 		}
+		pulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser");
 
 		// Initialize the timers.
 		foreach (Transform child in transform) {
@@ -66,34 +70,51 @@ public class Minigame : MonoBehaviour {
 			}
 
 			// Update power components and lights.
-			UpdatePowerComponents();
-			UpdateLights();
+			UpdatePowerGrid();
 		}
 		else if (gameTime <= (warmupLength + gameLength + cooldownLength)) {
-			// Remove the timers.
-			foreach (Transform timer in timers) {
-				timer.localScale = new Vector3(0, 1, 1);
+			if (!cooldownDone) {
+				// Remove the timers.
+				foreach (Transform timer in timers) {
+					timer.localScale = new Vector3(0, 1, 1);
+				}
+
+				// Remove the current pulsers.
+				foreach (MinigameSide side in sides) {
+					PoweredComponent currentPulser = side.GetCurrentPulser();
+					if (currentPulser != null) {
+						Destroy(currentPulser.gameObject);
+					}
+				}
+
+				cooldownDone = true;
 			}
 
-			// Remove all activated pulsers in the order they were placed, updating the power grid after each.
-			List<PoweredComponent> pulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser" && powered.IsPowered());
-			pulsers.Sort((a, b) => Math.Sign(a.GetTimeRemaining() - b.GetTimeRemaining()));
-			foreach (PoweredComponent pulser in pulsers) {
-				DestroyImmediate(pulser.gameObject);
-				UpdatePowerComponents();
-				UpdateLights();
+			// Continue to update power components and lights.
+			UpdatePowerGrid();
+		}
+		else {
+			if (!gameoverDone) {
+				// Remove all activated pulsers in the order they were placed, updating the power grid after each.
+				List<PoweredComponent> activePulsers = pulsers.FindAll(powered => powered != null && powered.IsPowered());
+				activePulsers.Sort((a, b) => Math.Sign(a.GetTimeRemaining() - b.GetTimeRemaining()));
+				foreach (PoweredComponent pulser in activePulsers) {
+					DestroyImmediate(pulser.gameObject);
+					UpdatePowerGrid();
+				}
+
+				gameoverDone = true;
 			}
 		}
 	}
 
-	void UpdatePowerComponents() {
+	void UpdatePowerGrid() {
+		// Update power components.
 		foreach (PoweredComponent startSegment in startSegments) {
 			startSegment.TransmitPower();
 		}
-	}
 
-	void UpdateLights() {
-		// Update the color and get the powered state of each light, then update the top light.
+		// Update the color and get the powered state of each light.
 		int solidScore = 0;
 		int flickerCount = 0;
 		foreach (MinigameLight light in lights) {
@@ -116,6 +137,7 @@ public class Minigame : MonoBehaviour {
 			Math.Sign(solidScore + flickerCount),
 		};
 
+		// Update the top light.
 		if (flickerScores[0] == flickerScores[1]) {
 			// Only one possible outcome regardless of who gets the flickering lights.
 			topLightMaterial.SetColor("_EmissionColor", GetColorFromScore(solidScore));

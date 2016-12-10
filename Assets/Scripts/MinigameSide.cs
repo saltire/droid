@@ -5,8 +5,9 @@ using System.Linq;
 
 public class MinigameSide : MonoBehaviour {
 	public Color color = Color.yellow;
-	public float pulserCount = 5;
+	public int pulserCount = 5;
 	public bool computerPlayer = false;
+	public float aiActionCooldown = 0.1f;
 
 	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 	Stack<PoweredComponent> unusedPulsers = new Stack<PoweredComponent>();
@@ -17,12 +18,13 @@ public class MinigameSide : MonoBehaviour {
 	float rowHeight = -11;
 	float xScale = 15;
 
-	float pulserOffsetX = -123;
-	float pulserSpacing = 13;
+	float pulserOffsetX = -127;
+	float pulserSpacing = 9.5f;
 	float pulserLength;
 
 	bool fireReleased = false;
 	bool moveReleased = true;
+	float aiCooldownTime = 0;
 
 	public List<PoweredComponent> Build() {
 		pulserLength = GetComponentInParent<Minigame>().pulserLength;
@@ -45,12 +47,11 @@ public class MinigameSide : MonoBehaviour {
 			}
 		}
 
-		// Set color of power source and (testing) pulsers.
 		foreach (Transform child in transform) {
 			if (child.name == "Source") {
 				child.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
 
-				// Build a list of wire segments connected to each power source.
+				// Build a sorted list of wire segments connected to the power source.
 				foreach (Collider other in Physics.OverlapBox(child.position, new Vector3(child.localScale.x / 2 + 0.5f, child.localScale.y / 2, 0.5f))) {
 					PoweredComponent powered = other.GetComponent<PoweredComponent>();
 					if (powered != null && other.tag == "WireSegment") {
@@ -59,17 +60,13 @@ public class MinigameSide : MonoBehaviour {
 				}
 				startSegments.Sort((a, b) => Math.Sign(a.transform.position.y - b.transform.position.y));
 			}
-
-			// Pulsers placed for testing only.
-			if (child.tag == "Pulser") {
-				child.GetComponent<PoweredComponent>().color = color;
-			}
 		}
 
 		// Add pulsers.
 		for (int i = 0; i < pulserCount; i++) {
-			GameObject pulser = (GameObject)Instantiate(prefabs["Pulser"], transform.position, Quaternion.Euler(0, 0, -90));
+			GameObject pulser = (GameObject)Instantiate(prefabs["Pulser"], transform.position, Quaternion.identity);
 			pulser.transform.parent = transform;
+			pulser.transform.localRotation = Quaternion.Euler(0, 0, -90);
 			pulser.transform.localPosition += new Vector3(pulserOffsetX + pulserSpacing * i, offsetY - (rowHeight * 2), 0);
 			unusedPulsers.Push(pulser.GetComponent<PoweredComponent>());
 		}
@@ -91,10 +88,54 @@ public class MinigameSide : MonoBehaviour {
 	}
 
 	void DoAIAction() {
+		if (currentPulser == null || aiCooldownTime > Time.unscaledTime) {
+			return;
+		}
 
+		// Find the number of lights connected to the current pulser, and what color they are.
+		int connectedLights = 0;
+		int enemyConnectedLights = 0;
+		PoweredComponent currentSegment = GetCurrentSegment();
+		if (currentSegment != null) {
+			HashSet<MinigameLight> lights = currentSegment.GetConnectedLights();
+			connectedLights = lights.Count;
+			enemyConnectedLights = lights.Where(light => light.GetColor() != color).Count();
+		}
+
+		// Create a weighted pool of potential actions.
+		Dictionary<string, int> actions = new Dictionary<string, int>() {
+			{"MoveUp", 1},
+			{"MoveDown", 15},
+			{"UsePulser", 1 + connectedLights + enemyConnectedLights * 20},
+			{"Wait", 15 - pulserCount}
+		};
+		List<string> actionPool = new List<string>();
+		foreach (KeyValuePair<string, int> act in actions) {
+			for (int i = 0; i < act.Value; i++) {
+				actionPool.Add(act.Key);
+			}
+		}
+
+		// Pick an action and execute it.
+		string action = actionPool[UnityEngine.Random.Range(0, actionPool.Count)];
+		if (action == "MoveUp") {
+			MovePulser(1);
+		}
+		else if (action == "MoveDown") {
+			MovePulser(-1);
+		}
+		else if (action == "UsePulser") {
+			UsePulser();
+		}
+
+		aiCooldownTime = Time.unscaledTime + aiActionCooldown;
 	}
 
 	void DoPlayerAction() {
+		if (currentPulser == null) {
+			return;
+		}
+
 		if (!fireReleased && Input.GetAxisRaw("Use") == 0) {
 			fireReleased = true;
 		}
@@ -105,32 +146,52 @@ public class MinigameSide : MonoBehaviour {
 		if (moveReleased) {
 			int direction = Math.Sign(Input.GetAxisRaw("Vertical"));
 
-			if (direction != 0 && currentPulser != null) {
+			if (direction != 0) {
+				MovePulser(direction);
 				moveReleased = false;
-
-				// Get a list of open segments, and the current segment that the pulser is on.
-				List<PoweredComponent> openSegments = startSegments.FindAll(segment => segment.GetAdjacentComponents(false).FindAll(adj => adj.tag == "Pulser" && adj.IsPowered()).Count == 0);
-				int wireIndex = -1;
-				foreach (Collider other in Physics.OverlapSphere(currentPulser.GetComponent<CapsuleCollider>().transform.position, 1)) {
-					PoweredComponent powered = other.GetComponent<PoweredComponent>();
-					if (other.tag == "WireSegment" && powered != null) {
-						wireIndex = openSegments.IndexOf(powered);
-					}
-				}
-
-				// Get the segment to move to, and move the pulser.
-				int nextWireIndex = (direction > 0 ? wireIndex + 1 : Math.Max(wireIndex, 0) + openSegments.Count - 1) % openSegments.Count;
-				currentPulser.transform.localPosition = new Vector3(currentPulser.transform.localPosition.x, openSegments[nextWireIndex].transform.localPosition.y, 0);
 			}
 		}
 
 		if (fireReleased && Input.GetAxisRaw("Use") > 0) {
-			if (currentPulser != null) {
-				// Activate the current pulser and get the next one.
-				currentPulser.ActivatePulser(color, pulserLength);
-				NextPulser();
+			if (GetCurrentSegment() != null) {
+				UsePulser();
 				fireReleased = false;
 			}
+		}
+	}
+
+	PoweredComponent GetCurrentSegment() {
+		if (currentPulser != null) {
+			foreach (Collider other in Physics.OverlapSphere(transform.position + new Vector3(offsetX * transform.localScale.x, currentPulser.transform.localPosition.y, 0), 1)) {
+				PoweredComponent powered = other.GetComponent<PoweredComponent>();
+				if (other.tag == "WireSegment" && powered != null) {
+					return powered;
+				}
+			}
+		}
+		return null;
+	}
+
+	void MovePulser(int direction) {
+		if (direction != 0 && currentPulser != null) {
+			// Get a list of open segments, and the current segment that the pulser is on.
+			// List<PoweredComponent> openSegments = startSegments.FindAll(segment => segment.GetAdjacentComponents(false).FindAll(adj => adj.tag == "Pulser" && adj.IsPowered()).Count == 0);
+			int wireIndex = startSegments.IndexOf(GetCurrentSegment());
+
+			// Get the segment to move to, and move the pulser.
+			int nextWireIndex = (direction > 0 ? wireIndex + 1 : Math.Max(wireIndex, 0) + startSegments.Count - 1) % startSegments.Count;
+			currentPulser.transform.localPosition = new Vector3(currentPulser.transform.localPosition.x, startSegments[nextWireIndex].transform.localPosition.y, 0);
+		}
+	}
+
+	void UsePulser() {
+		PoweredComponent currentSegment = GetCurrentSegment();
+		// Check that the current segment does not already have an active pulser.
+		if (currentPulser != null && currentSegment != null && currentSegment.GetAdjacentComponents(false).FindAll(adj => adj.tag == "Pulser" && adj.IsPowered()).Count == 0) {
+			// Activate the current pulser and get the next one.
+			currentPulser.ActivatePulser(color, pulserLength);
+			currentPulser.transform.localPosition += new Vector3(pulserSpacing, 0, 0);
+			NextPulser();
 		}
 	}
 
@@ -142,5 +203,9 @@ public class MinigameSide : MonoBehaviour {
 
 		currentPulser = unusedPulsers.Pop();
 		currentPulser.transform.localPosition = new Vector3(pulserOffsetX, offsetY - rowHeight, 0);
+	}
+
+	public PoweredComponent GetCurrentPulser() {
+		return currentPulser;
 	}
 }
