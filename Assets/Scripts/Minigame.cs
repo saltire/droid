@@ -60,8 +60,10 @@ public class Minigame : MonoBehaviour {
 				timer.localScale = new Vector3((warmupLength + gameLength - gameTime) / gameLength, 1, 1);
 			}
 
-			// Handle input for player 1.
-			sides[0].HandleInput();
+			// Execute turn for each player.
+			foreach (MinigameSide side in sides) {
+				side.DoAction();
+			}
 
 			// Update power components and lights.
 			UpdatePowerComponents();
@@ -74,12 +76,7 @@ public class Minigame : MonoBehaviour {
 			}
 
 			// Remove all activated pulsers in the order they were placed, updating the power grid after each.
-			List<PoweredComponent> pulsers = new List<PoweredComponent>();
-			foreach (PoweredComponent powered in GetComponentsInChildren<PoweredComponent>()) {
-				if (powered.tag == "Pulser" && powered.IsPowered()) {
-					pulsers.Add(powered);
-				}
-			}
+			List<PoweredComponent> pulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser" && powered.IsPowered());
 			pulsers.Sort((a, b) => Math.Sign(a.GetTimeRemaining() - b.GetTimeRemaining()));
 			foreach (PoweredComponent pulser in pulsers) {
 				DestroyImmediate(pulser.gameObject);

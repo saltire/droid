@@ -6,11 +6,7 @@ using System.Linq;
 public class MinigameSide : MonoBehaviour {
 	public Color color = Color.yellow;
 	public float pulserCount = 5;
-
-	public GameObject Pulser;
-	public GameObject WireDeadEnd;
-	public GameObject WireSegment;
-	public GameObject WireSplitter;
+	public bool computerPlayer = false;
 
 	List<PoweredComponent> startSegments = new List<PoweredComponent>();
 	Stack<PoweredComponent> unusedPulsers = new Stack<PoweredComponent>();
@@ -28,175 +24,18 @@ public class MinigameSide : MonoBehaviour {
 	bool fireReleased = false;
 	bool moveReleased = true;
 
-	Dictionary<string, GameObject> prefabs;
-
-	class PatternComponent {
-		public string prefab;
-		public int x = 0;
-		public int y = 0;
-		public float xScale = 1;
-	};
-
-	PatternComponent[][] patterns = new PatternComponent[][] {
-		// Straight
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 4, xScale = 8},
-		},
-		// // Dead end
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 3, xScale = 6},
-			new PatternComponent {prefab = "WireDeadEnd", x = 6, y = 0},
-		},
-		// Fork
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 2, xScale = 4},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
-		},
-		// Fork closer to the end
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 3, y = 1, xScale = 6},
-			new PatternComponent {prefab = "WireSplitter", x = 6, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
-
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireDeadEnd", x = 4, y = 0},
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 2, xScale = 4},
-			new PatternComponent {prefab = "WireDeadEnd", x = 4, y = 2},
-		},
-		// Fork with a dead end at the top
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 6, y = 0},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 2, xScale = 4},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
-		},
-		// Fork with a dead end at the bottom
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 6, y = 2},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
-		},
-		// Reverse fork
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 2, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 1, xScale = 4},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
-		},
-		// Reverse fork closer to the end
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 3, y = 0, xScale = 6},
-			new PatternComponent {prefab = "WireSegment", x = 3, y = 2, xScale = 6},
-			new PatternComponent {prefab = "WireSplitter", x = 6, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 1, xScale = 2},
-
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
-			new PatternComponent {prefab = "WireDeadEnd", x = 4, y = 1},
-		},
-		// Ring, or a fork followed by a reverse fork
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 1, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireSplitter", x = 6, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 1, xScale = 2},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 0},
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 2},
-		},
-		// Reverse fork followed by a fork
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 2, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 1, xScale = 2},
-			new PatternComponent {prefab = "WireSplitter", x = 6, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 0, xScale = 2},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
-		},
-		// Reverse branching fork
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 2, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 1, xScale = 2},
-			new PatternComponent {prefab = "WireSegment", x = 3, y = 3, xScale = 6},
-			new PatternComponent {prefab = "WireSplitter", x = 6, y = 2},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
-		},
-		// Reverse fork with a branching fork below it
-		new PatternComponent[] {
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 0, xScale = 4},
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 2, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 1, xScale = 4},
-
-			new PatternComponent {prefab = "WireSegment", x = 2, y = 4, xScale = 4},
-			new PatternComponent {prefab = "WireSplitter", x = 4, y = 4},
-			new PatternComponent {prefab = "WireSegment", x = 5, y = 3, xScale = 2},
-			new PatternComponent {prefab = "WireSplitter", x = 6, y = 3},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 2, xScale = 2},
-			new PatternComponent {prefab = "WireSegment", x = 7, y = 4, xScale = 2},
-			new PatternComponent {prefab = "WireSegment", x = 6, y = 5, xScale = 4},
-
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 1, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 1},
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 3, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 3},
-			new PatternComponent {prefab = "WireSegment", x = 1, y = 5, xScale = 2},
-			new PatternComponent {prefab = "WireDeadEnd", x = 2, y = 5},
-		},
-	};
-
 	public List<PoweredComponent> Build() {
 		pulserLength = GetComponentInParent<Minigame>().pulserLength;
 
-		prefabs = new Dictionary<string, GameObject>() {
-			{"WireDeadEnd", WireDeadEnd},
-			{"WireSegment", WireSegment},
-			{"WireSplitter", WireSplitter}
-		};
+		Dictionary<string, GameObject> prefabs = GetComponentInParent<MinigameBuilder>().GetPrefabs();
 
 		// Place patterns.
 		int row = 0;
 		while (row < 12) {
-			PatternComponent[] pattern = patterns[UnityEngine.Random.Range(0, patterns.Length)];
+			MinigameBuilder.PatternComponent[] pattern = MinigameBuilder.patterns[UnityEngine.Random.Range(0, MinigameBuilder.patterns.Length)];
 			int height = Mathf.Max(pattern.Select(component => component.y).ToArray()) + 1;
 			if (row + height <= 12) {
-				foreach (PatternComponent pc in pattern) {
+				foreach (MinigameBuilder.PatternComponent pc in pattern) {
 					GameObject comp = (GameObject)Instantiate(prefabs[pc.prefab], transform.position, Quaternion.identity);
 					comp.transform.parent = transform;
 					comp.transform.localPosition += new Vector3(pc.x * xScale + offsetX, (pc.y + row) * rowHeight + offsetY, 0);
@@ -229,7 +68,7 @@ public class MinigameSide : MonoBehaviour {
 
 		// Add pulsers.
 		for (int i = 0; i < pulserCount; i++) {
-			GameObject pulser = (GameObject)Instantiate(Pulser, transform.position, Quaternion.Euler(0, 0, -90));
+			GameObject pulser = (GameObject)Instantiate(prefabs["Pulser"], transform.position, Quaternion.Euler(0, 0, -90));
 			pulser.transform.parent = transform;
 			pulser.transform.localPosition += new Vector3(pulserOffsetX + pulserSpacing * i, offsetY - (rowHeight * 2), 0);
 			unusedPulsers.Push(pulser.GetComponent<PoweredComponent>());
@@ -238,11 +77,24 @@ public class MinigameSide : MonoBehaviour {
 		return startSegments;
 	}
 
-	public void HandleInput() {
+	public void DoAction() {
 		if (currentPulser == null) {
 			NextPulser();
 		}
 
+		if (computerPlayer) {
+			DoAIAction();
+		}
+		else {
+			DoPlayerAction();
+		}
+	}
+
+	void DoAIAction() {
+
+	}
+
+	void DoPlayerAction() {
 		if (!fireReleased && Input.GetAxisRaw("Use") == 0) {
 			fireReleased = true;
 		}
@@ -267,13 +119,7 @@ public class MinigameSide : MonoBehaviour {
 				}
 
 				// Get the segment to move to, and move the pulser.
-				int nextWireIndex;
-				if (direction > 0) {
-					nextWireIndex = (wireIndex + 1) % openSegments.Count;
-				}
-				else {
-					nextWireIndex = (Math.Max(wireIndex, 0) + openSegments.Count - 1) % openSegments.Count;
-				}
+				int nextWireIndex = (direction > 0 ? wireIndex + 1 : Math.Max(wireIndex, 0) + openSegments.Count - 1) % openSegments.Count;
 				currentPulser.transform.localPosition = new Vector3(currentPulser.transform.localPosition.x, openSegments[nextWireIndex].transform.localPosition.y, 0);
 			}
 		}
