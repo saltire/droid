@@ -21,25 +21,24 @@ public class MinigameSide : MonoBehaviour {
 	float pulserUnplacedX = -127;
 	float pulserPlacedOffsetX = 9.5f;
 
-	List<PoweredComponent> startSegments;
-	Stack<PoweredComponent> unusedPulsers;
+	Dictionary<string, GameObject> prefabs;
+	Material sourceMaterial;
+	List<PoweredComponent> startSegments = new List<PoweredComponent>();
+	Stack<PoweredComponent> unusedPulsers = new Stack<PoweredComponent>();
 	PoweredComponent currentPulser;
 
 	bool fireReleased = false;
 	float playerMoveCooldownTime = 0;
 	float aiActionCooldownTime = 0;
 
-	public List<PoweredComponent> Build(Color newColor, int newPulserCount, bool newComputerPlayer) {
-		color = newColor;
-		pulserCount = newPulserCount;
-		computerPlayer = newComputerPlayer;
+	public List<PoweredComponent> Build() {
 		pulserLength = GetComponentInParent<Minigame>().pulserLength;
 
 		fireReleased = false;
 		playerMoveCooldownTime = 0;
 		aiActionCooldownTime = 0;
 
-		Dictionary<string, GameObject> prefabs = GetComponentInParent<MinigameBuilder>().GetPrefabs();
+		prefabs = GetComponentInParent<MinigameBuilder>().GetPrefabs();
 
 		// Place patterns.
 		int row = 0;
@@ -59,10 +58,9 @@ public class MinigameSide : MonoBehaviour {
 
 		foreach (Transform child in transform) {
 			if (child.name == "Source") {
-				child.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+				sourceMaterial = child.GetComponent<Renderer>().material;
 
 				// Build a sorted list of wire segments connected to the power source.
-				startSegments = new List<PoweredComponent>();
 				foreach (Collider other in Physics.OverlapBox(child.position, new Vector3(child.localScale.x / 2 + 0.5f, child.localScale.y / 2, 0.5f))) {
 					PoweredComponent powered = other.GetComponent<PoweredComponent>();
 					if (powered != null && other.tag == "WireSegment") {
@@ -73,8 +71,21 @@ public class MinigameSide : MonoBehaviour {
 			}
 		}
 
-		// Add pulsers.
-		unusedPulsers = new Stack<PoweredComponent>();
+		return startSegments;
+	}
+
+	public void SetPlayer(Color newColor, int newPulserCount, bool newComputerPlayer) {
+		color = newColor;
+		pulserCount = newPulserCount;
+		computerPlayer = newComputerPlayer;
+
+		sourceMaterial.SetColor("_EmissionColor", color);
+
+		// Remove and add pulsers.
+		while (unusedPulsers.Count > 0) {
+			PoweredComponent pulser = unusedPulsers.Pop();
+			Destroy(pulser.gameObject);
+		}
 		for (int i = 0; i < pulserCount; i++) {
 			GameObject pulser = (GameObject)Instantiate(prefabs["Pulser"], transform.position, Quaternion.identity);
 			pulser.transform.parent = transform;
@@ -83,8 +94,6 @@ public class MinigameSide : MonoBehaviour {
 			unusedPulsers.Push(pulser.GetComponent<PoweredComponent>());
 		}
 		currentPulser = null;
-
-		return startSegments;
 	}
 
 	public void DoAction() {

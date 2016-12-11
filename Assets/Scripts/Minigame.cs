@@ -10,7 +10,7 @@ public class Minigame : MonoBehaviour {
 	public Color player2Color = Color.magenta;
 	public int basePulsers = 3;
 
-	public float warmupLength = 1;
+	public float warmupLength = 3;
 	public float gameLength = 8;
 	public float cooldownLength = 1;
 	public float gameoverLength = 1;
@@ -20,6 +20,8 @@ public class Minigame : MonoBehaviour {
 	float startTime;
 	int player1Pulsers;
 	int player2Pulsers;
+	bool switchedSides = false;
+	bool sideSwitchReleased = false;
 	bool cooldownDone = false;
 	bool gameoverDone = false;
 
@@ -27,7 +29,6 @@ public class Minigame : MonoBehaviour {
 	MinigameLight[] lights;
 	Material topLightMaterial;
 	List<PoweredComponent> startSegments;
-	List<PoweredComponent> pulsers;
 	List<Transform> timers = new List<Transform>();
 
 	void Start() {
@@ -56,12 +57,14 @@ public class Minigame : MonoBehaviour {
 		sides[1].transform.parent = transform;
 		sides[1].transform.localScale = new Vector3(-1, 1, 1);
 
-		// Build patterns on each side of the game, and store refs to the starting wire segments and pulsers.
+		// Build patterns on each side of the game, and store refs to the starting wire segments.
 		startSegments = new List<PoweredComponent>();
-		startSegments.AddRange(sides[0].Build(player1Color, player1Pulsers, false));
-		startSegments.AddRange(sides[1].Build(player2Color, player2Pulsers, true));
+		startSegments.AddRange(sides[0].Build());
+		startSegments.AddRange(sides[1].Build());
 
-		pulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser");
+		// Set player-specific attributes.
+		sides[0].SetPlayer(player1Color, player1Pulsers, false);
+		sides[1].SetPlayer(player2Color, player2Pulsers, true);
 
 		// Initialize the timers.
 		foreach (Transform timer in timers) {
@@ -90,6 +93,9 @@ public class Minigame : MonoBehaviour {
 			foreach (Transform timer in timers) {
 				timer.localScale = new Vector3(gameTime / warmupLength, 1, 1);
 			}
+
+			// Listen for player's input to switch sides.
+			HandleSideSwitch();
 		}
 		else if (gameTime <= (warmupLength + gameLength)) {
 			// Shrink the timers.
@@ -129,7 +135,7 @@ public class Minigame : MonoBehaviour {
 		else if (gameTime <= (warmupLength + gameLength + cooldownLength + gameoverLength)) {
 			if (!gameoverDone) {
 				// Remove all activated pulsers in the order they were placed, updating the power grid after each.
-				List<PoweredComponent> activePulsers = pulsers.FindAll(powered => powered != null && powered.IsPowered());
+				List<PoweredComponent> activePulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser" && powered != null && powered.IsPowered());
 				activePulsers.Sort((a, b) => Math.Sign(a.GetTimeRemaining() - b.GetTimeRemaining()));
 				foreach (PoweredComponent pulser in activePulsers) {
 					DestroyImmediate(pulser.gameObject);
@@ -159,6 +165,21 @@ public class Minigame : MonoBehaviour {
 			else {
 				StartMinigame(player1Pulsers, player2Pulsers);
 			}
+		}
+	}
+
+	void HandleSideSwitch() {
+		if (!sideSwitchReleased && Input.GetAxisRaw("Horizontal") == 0) {
+			sideSwitchReleased = true;
+		}
+
+		if (sideSwitchReleased && Input.GetAxisRaw("Horizontal") != 0) {
+			sideSwitchReleased = false;
+
+			// Switch player sides and update each side.
+			switchedSides = !switchedSides;
+			sides[switchedSides ? 1 : 0].SetPlayer(player1Color, player1Pulsers, false);
+			sides[switchedSides ? 0 : 1].SetPlayer(player2Color, player2Pulsers, true);
 		}
 	}
 
