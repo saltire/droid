@@ -4,24 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class MinigameSide : MonoBehaviour {
-	public Color color = Color.yellow;
-	public int pulserCount = 5;
-	public bool computerPlayer = false;
-	public float playerMoveCooldown = 0.1f;
-	public float aiActionCooldown = 0.1f;
+	public Color color;
 
-	List<PoweredComponent> startSegments;
-	Stack<PoweredComponent> unusedPulsers;
-	PoweredComponent currentPulser;
+	int pulserCount;
+	bool computerPlayer;
+	float playerMoveCooldown = 0.1f;
+	float aiActionCooldown = 0.1f;
+	float pulserLength = 4;
 
 	float offsetX = -132.5f;
 	float offsetY = -38;
 	float rowHeight = -11;
 	float xScale = 15;
 
-	float pulserOffsetX = -127;
-	float pulserSpacing = 9.5f;
-	float pulserLength;
+	float pulserStackX = -145;
+	float pulserUnplacedX = -127;
+	float pulserPlacedOffsetX = 9.5f;
+
+	List<PoweredComponent> startSegments;
+	Stack<PoweredComponent> unusedPulsers;
+	PoweredComponent currentPulser;
 
 	bool fireReleased = false;
 	float playerMoveCooldownTime = 0;
@@ -31,7 +33,6 @@ public class MinigameSide : MonoBehaviour {
 		color = newColor;
 		pulserCount = newPulserCount;
 		computerPlayer = newComputerPlayer;
-
 		pulserLength = GetComponentInParent<Minigame>().pulserLength;
 
 		fireReleased = false;
@@ -78,7 +79,7 @@ public class MinigameSide : MonoBehaviour {
 			GameObject pulser = (GameObject)Instantiate(prefabs["Pulser"], transform.position, Quaternion.identity);
 			pulser.transform.parent = transform;
 			pulser.transform.localRotation = Quaternion.Euler(0, 0, -90);
-			pulser.transform.localPosition += new Vector3(pulserOffsetX + pulserSpacing * i, offsetY - (rowHeight * 2), 0);
+			pulser.transform.localPosition += new Vector3(pulserStackX, offsetY + (rowHeight * (i - 1)), 0);
 			unusedPulsers.Push(pulser.GetComponent<PoweredComponent>());
 		}
 		currentPulser = null;
@@ -198,7 +199,7 @@ public class MinigameSide : MonoBehaviour {
 		if (currentPulser != null && currentSegment != null && currentSegment.GetAdjacentComponents(false).FindAll(adj => adj.tag == "Pulser" && adj.IsPowered()).Count == 0) {
 			// Activate the current pulser and get the next one.
 			currentPulser.ActivatePulser(color, pulserLength);
-			currentPulser.transform.localPosition += new Vector3(pulserSpacing, 0, 0);
+			currentPulser.transform.localPosition += new Vector3(pulserPlacedOffsetX, 0, 0);
 			NextPulser();
 		}
 	}
@@ -210,7 +211,7 @@ public class MinigameSide : MonoBehaviour {
 		}
 
 		currentPulser = unusedPulsers.Pop();
-		currentPulser.transform.localPosition = new Vector3(pulserOffsetX, offsetY - rowHeight, 0);
+		currentPulser.transform.localPosition = new Vector3(pulserUnplacedX, offsetY - rowHeight, 0);
 	}
 
 	public PoweredComponent GetCurrentPulser() {
