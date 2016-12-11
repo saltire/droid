@@ -42,6 +42,7 @@ public class Minigame : MonoBehaviour {
 	}
 
 	public void StartMinigame(int player1type, int player2type) {
+		minigameCamera.enabled = true;
 		Time.timeScale = 0;
 		startTime = Time.unscaledTime;
 		player1Pulsers = basePulsers + player1type / 100;
@@ -71,14 +72,10 @@ public class Minigame : MonoBehaviour {
 			timer.localScale = new Vector3(0, 1, 1);
 		}
 
-		// Reset each light, and create references to connecting wires.
+		// For each light, create references to connecting wires.
 		foreach (MinigameLight light in lights) {
 			light.FindSources();
-			light.Reset();
 		}
-		topLightMaterial.SetColor("_EmissionColor", Color.clear);
-
-		minigameCamera.enabled = true;
 	}
 
 	void Update() {
@@ -146,16 +143,22 @@ public class Minigame : MonoBehaviour {
 			}
 		}
 		else {
-			// Reset camera and timescale.
+
+			// Reset camera, timescale, game sides and lights.
 			minigameCamera.enabled = false;
 			Time.timeScale = 1;
 			foreach (MinigameSide side in sides) {
 				DestroyImmediate(side.gameObject);
 			}
+			foreach (MinigameLight light in lights) {
+				light.Reset();
+			}
+
+			Color finalColor = topLightMaterial.GetColor("_EmissionColor");
+			topLightMaterial.SetColor("_EmissionColor", Color.clear);
 
 			// Take action depending on the minigame's outcome.
 			Influence influence = GameObject.FindGameObjectWithTag("Player").GetComponent<Influence>();
-			Color finalColor = topLightMaterial.GetColor("_EmissionColor");
 			if (finalColor == player1Color) {
 				influence.OnHackSuccess();
 			}
