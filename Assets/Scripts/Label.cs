@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
 public class Label : MonoBehaviour {
+	public string text;
+
 	public void SetLabel(int type) {
-		GetComponent<TextMesh>().text = type.ToString("D3");
+		text = type.ToString("D3");
+		GetComponent<TextMesh>().text = text;
 	}
 
 	void LateUpdate() {

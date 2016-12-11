@@ -20,8 +20,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4926316292735600}
   - component: {fileID: 33852339820814210}
-  - component: {fileID: 65177392273235122}
   - component: {fileID: 23751620653103142}
+  - component: {fileID: 64100003505779144}
   m_Layer: 13
   m_Name: WireSegment
   m_TagString: WireSegment
@@ -38,8 +38,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4926214051105866}
   - component: {fileID: 33871326191875002}
-  - component: {fileID: 65975894913037402}
   - component: {fileID: 23077607796689384}
+  - component: {fileID: 64277495595135974}
   m_Layer: 13
   m_Name: Source
   m_TagString: Untagged
@@ -250,8 +250,8 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1464850670376066}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &65177392273235122
-BoxCollider:
+--- !u!64 &64100003505779144
+MeshCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -260,10 +260,12 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &65975894913037402
-BoxCollider:
+  m_Convex: 1
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!64 &64277495595135974
+MeshCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -272,8 +274,10 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Convex: 1
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &114663244465517604
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -288,6 +292,8 @@ MonoBehaviour:
   color: {r: 1, g: 0.88235295, b: 0, a: 1}
   pulserCount: 5
   computerPlayer: 0
+  playerMoveCooldown: 0.1
+  aiActionCooldown: 0.1
 --- !u!135 &135421937491719152
 SphereCollider:
   m_ObjectHideFlags: 1

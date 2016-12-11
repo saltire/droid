@@ -3,53 +3,86 @@ using System;
 using System.Collections.Generic;
 
 public class Minigame : MonoBehaviour {
+	public Camera minigameCamera;
+	public GameObject MinigameSide;
+
+	public Color player1Color = Color.yellow;
+	public Color player2Color = Color.magenta;
+	public int basePulsers = 3;
+
 	public float warmupLength = 1;
 	public float gameLength = 8;
 	public float cooldownLength = 1;
+	public float gameoverLength = 1;
 	public float pulserLength = 4;
 	public float flickerSpeed = 20;
 
 	float startTime;
+	int player1Pulsers;
+	int player2Pulsers;
 	bool cooldownDone = false;
 	bool gameoverDone = false;
 
-	MinigameSide[] sides;
+	MinigameSide[] sides = new MinigameSide[2];
 	MinigameLight[] lights;
 	Material topLightMaterial;
-	List<PoweredComponent> startSegments = new List<PoweredComponent>();
+	List<PoweredComponent> startSegments;
 	List<PoweredComponent> pulsers;
 	List<Transform> timers = new List<Transform>();
 
 	void Start() {
-		Time.timeScale = 0;
-		startTime = Time.unscaledTime;
-
-		sides = GetComponentsInChildren<MinigameSide>();
 		lights = GetComponentsInChildren<MinigameLight>();
 		topLightMaterial = transform.Find("TopLight").GetComponent<Renderer>().material;
-
-		// Build patterns on each side of the game, and store refs to the starting wire segments.
-		foreach (MinigameSide side in sides) {
-			var sideSegments = side.Build();
-			startSegments.AddRange(sideSegments);
-		}
-		pulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser");
-
-		// Initialize the timers.
 		foreach (Transform child in transform) {
 			if (child.name == "Timer") {
 				timers.Add(child);
-				child.localScale = new Vector3(0, 1, 1);
 			}
-		}
-
-		// For each light, create references to connecting wires.
-		foreach (MinigameLight light in lights) {
-			light.FindSources();
 		}
 	}
 
+	public void StartMinigame(int player1type, int player2type) {
+		Time.timeScale = 0;
+		startTime = Time.unscaledTime;
+		player1Pulsers = basePulsers + player1type / 100;
+		player2Pulsers = basePulsers + player2type / 100;
+		cooldownDone = false;
+		gameoverDone = false;
+
+		// Instantiate a side of the game for each player.
+		sides[0] = Instantiate(MinigameSide, transform.position, Quaternion.identity).GetComponent<MinigameSide>();
+		sides[0].transform.parent = transform;
+
+		sides[1] = Instantiate(MinigameSide, transform.position, Quaternion.identity).GetComponent<MinigameSide>();
+		sides[1].transform.parent = transform;
+		sides[1].transform.localScale = new Vector3(-1, 1, 1);
+
+		// Build patterns on each side of the game, and store refs to the starting wire segments and pulsers.
+		startSegments = new List<PoweredComponent>();
+		startSegments.AddRange(sides[0].Build(player1Color, player1Pulsers, false));
+		startSegments.AddRange(sides[1].Build(player2Color, player2Pulsers, true));
+
+		pulsers = new List<PoweredComponent>(GetComponentsInChildren<PoweredComponent>()).FindAll(powered => powered.tag == "Pulser");
+
+		// Initialize the timers.
+		foreach (Transform timer in timers) {
+			timer.localScale = new Vector3(0, 1, 1);
+		}
+
+		// Reset each light, and create references to connecting wires.
+		foreach (MinigameLight light in lights) {
+			light.FindSources();
+			light.Reset();
+		}
+		topLightMaterial.SetColor("_EmissionColor", Color.clear);
+
+		minigameCamera.enabled = true;
+	}
+
 	void Update() {
+		if (!minigameCamera.enabled) {
+			return;
+		}
+
 		float gameTime = Time.unscaledTime - startTime;
 
 		if (gameTime <= warmupLength) {
@@ -93,7 +126,7 @@ public class Minigame : MonoBehaviour {
 			// Continue to update power components and lights.
 			UpdatePowerGrid();
 		}
-		else {
+		else if (gameTime <= (warmupLength + gameLength + cooldownLength + gameoverLength)) {
 			if (!gameoverDone) {
 				// Remove all activated pulsers in the order they were placed, updating the power grid after each.
 				List<PoweredComponent> activePulsers = pulsers.FindAll(powered => powered != null && powered.IsPowered());
@@ -104,6 +137,27 @@ public class Minigame : MonoBehaviour {
 				}
 
 				gameoverDone = true;
+			}
+		}
+		else {
+			// Reset camera and timescale.
+			minigameCamera.enabled = false;
+			Time.timeScale = 1;
+			foreach (MinigameSide side in sides) {
+				DestroyImmediate(side.gameObject);
+			}
+
+			// Take action depending on the minigame's outcome.
+			Influence influence = GameObject.FindGameObjectWithTag("Player").GetComponent<Influence>();
+			Color finalColor = topLightMaterial.GetColor("_EmissionColor");
+			if (finalColor == player1Color) {
+				influence.OnHackSuccess();
+			}
+			else if (finalColor == player2Color) {
+				influence.OnHackFailure();
+			}
+			else {
+				StartMinigame(player1Pulsers, player2Pulsers);
 			}
 		}
 	}

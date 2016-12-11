@@ -23,10 +23,6 @@ public class Map : MonoBehaviour {
 		new string[] {"Bridge", "Research"},
 	};
 
-	void Start() {
-		mapCamera.enabled = false;
-	}
-
 	public void ShowMap(Lift lift) {
 		// Pause game.
 		Time.timeScale = 0;
@@ -50,6 +46,10 @@ public class Map : MonoBehaviour {
 	}
 
 	void Update() {
+		if (!mapCamera.enabled) {
+			return;
+		}
+
 		if (!fireReleased && Input.GetAxisRaw("Use") == 0) {
 			fireReleased = true;
 		}
@@ -57,51 +57,49 @@ public class Map : MonoBehaviour {
 			moveReleased = true;
 		}
 
-		if (mapCamera.enabled) {
-			if (moveReleased) {
-				int direction = Math.Sign(Input.GetAxisRaw("Vertical"));
+		if (moveReleased) {
+			int direction = Math.Sign(Input.GetAxisRaw("Vertical"));
 
-				if (direction != 0) {
-					moveReleased = false;
+			if (direction != 0) {
+				moveReleased = false;
 
-					if (direction > 0 && currentLiftPosition > 0) {
-						SetLiftPosition(currentLiftPosition - 1);
+				if (direction > 0 && currentLiftPosition > 0) {
+					SetLiftPosition(currentLiftPosition - 1);
+				}
+				else if (direction < 0 && currentLiftPosition < lifts[currentLiftIndex].Length - 1) {
+					SetLiftPosition(currentLiftPosition + 1);
+				}
+			}
+		}
+
+		if (fireReleased && Input.GetAxisRaw("Use") > 0) {
+			foreach (Transform level in GameObject.Find("LevelBuilder").transform) {
+				if (level.name == lifts[currentLiftIndex][currentLiftPosition]) {
+					foreach (Lift otherLift in level.GetComponentsInChildren<Lift>()) {
+						if (otherLift.liftIndex == currentLiftIndex) {
+							otherLift.TemporarilyDisable();
+							level.gameObject.SetActive(true);
+
+							GameObject player = GameObject.FindGameObjectWithTag("Player");
+							player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+							player.transform.parent = level;
+							player.transform.position = otherLift.transform.position + new Vector3(0, 0.5f, 0);
+						}
 					}
-					else if (direction < 0 && currentLiftPosition < lifts[currentLiftIndex].Length - 1) {
-						SetLiftPosition(currentLiftPosition + 1);
+
+					foreach (Transform otherLevel in GameObject.Find("LevelBuilder").transform) {
+						if (otherLevel != level) {
+							otherLevel.gameObject.SetActive(false);
+						}
 					}
 				}
 			}
 
-			if (fireReleased && Input.GetAxisRaw("Use") > 0) {
-				foreach (Transform level in GameObject.Find("LevelBuilder").transform) {
-					if (level.name == lifts[currentLiftIndex][currentLiftPosition]) {
-						foreach (Lift otherLift in level.GetComponentsInChildren<Lift>()) {
-							if (otherLift.liftIndex == currentLiftIndex) {
-								otherLift.TemporarilyDisable();
-								level.gameObject.SetActive(true);
+			// Unpause game.
+			Time.timeScale = 1;
 
-								GameObject player = GameObject.FindGameObjectWithTag("Player");
-								player.GetComponent<Rigidbody>().velocity = Vector3.zero;
-								player.transform.parent = level;
-								player.transform.position = otherLift.transform.position + new Vector3(0, 0.5f, 0);
-							}
-						}
-
-						foreach (Transform otherLevel in GameObject.Find("LevelBuilder").transform) {
-							if (otherLevel != level) {
-								otherLevel.gameObject.SetActive(false);
-							}
-						}
-					}
-				}
-
-				// Unpause game.
-				Time.timeScale = 1;
-
-				// Switch cameras.
-				mapCamera.enabled = false;
-			}
+			// Switch cameras.
+			mapCamera.enabled = false;
 		}
 	}
 

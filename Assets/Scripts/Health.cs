@@ -46,6 +46,10 @@ public class Health : MonoBehaviour {
 		}
 	}
 
+	public void Kill() {
+		Damage(health);
+	}
+
 	public bool IsAlive() {
 		return health > 0;
 	}

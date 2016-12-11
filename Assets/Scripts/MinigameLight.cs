@@ -52,6 +52,11 @@ public class MinigameLight : MonoBehaviour {
 		return colorState;
 	}
 
+	public void Reset() {
+		colorState = 0;
+		material.SetColor("_EmissionColor", Color.clear);
+	}
+
 	public Color GetColor() {
 		return material.GetColor("_EmissionColor");
 	}

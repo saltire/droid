@@ -10,8 +10,8 @@ public class MinigameSide : MonoBehaviour {
 	public float playerMoveCooldown = 0.1f;
 	public float aiActionCooldown = 0.1f;
 
-	List<PoweredComponent> startSegments = new List<PoweredComponent>();
-	Stack<PoweredComponent> unusedPulsers = new Stack<PoweredComponent>();
+	List<PoweredComponent> startSegments;
+	Stack<PoweredComponent> unusedPulsers;
 	PoweredComponent currentPulser;
 
 	float offsetX = -132.5f;
@@ -27,8 +27,16 @@ public class MinigameSide : MonoBehaviour {
 	float playerMoveCooldownTime = 0;
 	float aiActionCooldownTime = 0;
 
-	public List<PoweredComponent> Build() {
+	public List<PoweredComponent> Build(Color newColor, int newPulserCount, bool newComputerPlayer) {
+		color = newColor;
+		pulserCount = newPulserCount;
+		computerPlayer = newComputerPlayer;
+
 		pulserLength = GetComponentInParent<Minigame>().pulserLength;
+
+		fireReleased = false;
+		playerMoveCooldownTime = 0;
+		aiActionCooldownTime = 0;
 
 		Dictionary<string, GameObject> prefabs = GetComponentInParent<MinigameBuilder>().GetPrefabs();
 
@@ -53,6 +61,7 @@ public class MinigameSide : MonoBehaviour {
 				child.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
 
 				// Build a sorted list of wire segments connected to the power source.
+				startSegments = new List<PoweredComponent>();
 				foreach (Collider other in Physics.OverlapBox(child.position, new Vector3(child.localScale.x / 2 + 0.5f, child.localScale.y / 2, 0.5f))) {
 					PoweredComponent powered = other.GetComponent<PoweredComponent>();
 					if (powered != null && other.tag == "WireSegment") {
@@ -64,6 +73,7 @@ public class MinigameSide : MonoBehaviour {
 		}
 
 		// Add pulsers.
+		unusedPulsers = new Stack<PoweredComponent>();
 		for (int i = 0; i < pulserCount; i++) {
 			GameObject pulser = (GameObject)Instantiate(prefabs["Pulser"], transform.position, Quaternion.identity);
 			pulser.transform.parent = transform;
@@ -71,6 +81,7 @@ public class MinigameSide : MonoBehaviour {
 			pulser.transform.localPosition += new Vector3(pulserOffsetX + pulserSpacing * i, offsetY - (rowHeight * 2), 0);
 			unusedPulsers.Push(pulser.GetComponent<PoweredComponent>());
 		}
+		currentPulser = null;
 
 		return startSegments;
 	}

@@ -5,11 +5,16 @@ public class Influence : MonoBehaviour {
 	public float flashSpeed = 3;
 	public Color flashColor = Color.red;
 
+	Minigame minigame;
 	List<Material> materials = new List<Material>();
+	List<DroidType> droids = new List<DroidType>();
+	DroidType hackedDroid;
+
 	float holdTime = 0;
-	List<GameObject> droids = new List<GameObject>();
+	int type = 1;
 
 	void Start() {
+		minigame = GameObject.Find("Minigame").GetComponent<Minigame>();
 		foreach (Renderer renderer in transform.FindChild("Body").GetComponentsInChildren<Renderer>()) {
 			materials.Add(renderer.material);
 		}
@@ -39,29 +44,57 @@ public class Influence : MonoBehaviour {
 			droids = droids.FindAll(droid => !droid.Equals(null));
 
 			if (droids.Count > 0) {
-				GameObject droid = droids[0];
-				DroidType droidType = droid.gameObject.GetComponent<DroidType>();
-
-				int type = droidType.GetDroidType();
-				GetComponentInChildren<Label>().SetLabel(type);
-
-				DroidType.DroidStats stats = droidType.GetDroidStats(type);
-				GetComponent<PlayerWeapon>().SetWeapon(stats.weapon, stats.cooldownTime);
-
-				Destroy(droid);
+				hackedDroid = droids[0];
+				minigame.StartMinigame(type, hackedDroid.GetDroidType());
 			}
 		}
 	}
 
+	public void OnHackSuccess() {
+		// Get the hacked droid's stats and assign them to the player.
+		type = hackedDroid.GetDroidType();
+		GetComponentInChildren<Label>().SetLabel(type);
+		DroidType.DroidStats stats = hackedDroid.GetDroidStats(type);
+		GetComponent<PlayerWeapon>().SetWeapon(stats.weapon, stats.cooldownTime);
+
+		// Remove the hacked droid.
+		Destroy(hackedDroid.gameObject);
+		droids.Remove(hackedDroid);
+		hackedDroid = null;
+	}
+
+	public void OnHackFailure() {
+		Label label = GetComponentInChildren<Label>();
+
+		if (type == 1) {
+			// If at the lowest level, explode the player and the hacked droid.
+			GetComponent<Health>().Kill();
+			hackedDroid.GetComponent<Health>().Kill();
+		}
+		else {
+			// If not, demote to the lowest level.
+			type = 1;
+			label.SetLabel(1);
+			DroidType.DroidStats stats = hackedDroid.GetDroidStats(type);
+			GetComponent<PlayerWeapon>().SetWeapon(stats.weapon, stats.cooldownTime);
+
+			// Remove the hacked droid.
+			Destroy(hackedDroid.gameObject);
+		}
+
+		droids.Remove(hackedDroid);
+		hackedDroid = null;
+	}
+
 	void OnCollisionEnter(Collision collision) {
 		if (collision.gameObject.tag == "Droid")  {
-			droids.Add(collision.gameObject);
+			droids.Add(collision.gameObject.GetComponent<DroidType>());
 		}
 	}
 
 	void OnCollisionExit(Collision collision) {
 		if (collision.gameObject.tag == "Droid")  {
-			droids.Remove(collision.gameObject);
+			droids.Remove(collision.gameObject.GetComponent<DroidType>());
 		}
 	}
 }
