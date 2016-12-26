@@ -19,7 +19,7 @@ public class PlayerSpawner : MonoBehaviour {
 		startPoint.parent.gameObject.SetActive(true);
 
 		// Place the player on the start point.
-		GameObject player = (GameObject)Instantiate(Player, startPoint.position, Quaternion.identity);
+		GameObject player = (GameObject)Instantiate(Player, startPoint.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
 		player.transform.parent = startPoint.parent;
 
 		// Place camera.

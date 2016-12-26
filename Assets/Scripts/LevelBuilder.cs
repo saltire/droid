@@ -9,61 +9,19 @@ using System.Xml;
 public class LevelBuilder : MonoBehaviour {
 	public GameObject Level;
 
-	public GameObject Crate;
-	public GameObject Door;
-	public GameObject Energizer;
-	public GameObject Floor;
-	public GameObject Lift;
-	public GameObject Wall;
-
-	public GameObject PlayerStart;
-	public GameObject Waypoint;
-
 	public float heightInterval = 20f;
 
 	public List<int> defaultDroidTypes;
 
-	Dictionary<int, GameObject> tileMap;
-	Dictionary<int, GameObject> markerMap;
+	class TileData {
+		public GameObject prefab;
+		public int rotation;
+	}
+
+	Dictionary<int, TileData> tileMap;
 
 	public void Build() {
-		tileMap = new Dictionary<int, GameObject>() {
-			{2, Door},
-			{3, Door},
-			{4, Lift},
-			{5, Wall},
-			{6, Wall},
-			{7, Wall},
-			{8, Wall},
-			{9, Wall},
-			{10, Wall},
-			{11, Wall},
-			{12, Wall},
-			{13, Wall},
-			{14, Wall},
-			{15, Wall},
-			{16, Wall},
-			{17, Floor},
-			{18, Floor},
-			{19, Floor},
-			{20, Floor},
-			{21, Energizer},
-			{22, Floor},
-			{23, Crate},
-			{24, Wall},
-			{25, Floor},
-			{26, Floor},
-			{27, Wall},
-			{28, Wall},
-			{29, Crate},
-			{30, Crate},
-			{31, Floor},
-		};
-
-		markerMap = new Dictionary<int, GameObject>() {
-			{33, Waypoint},
-			{34, PlayerStart},
-		};
+		tileMap = GetTileSet("Assets/Maps/tiles.tsx");
 
 		// Remove any old levels.
 		while (transform.childCount > 0) {
@@ -86,6 +44,28 @@ public class LevelBuilder : MonoBehaviour {
 		foreach (Transform level in transform) {
 			level.gameObject.SetActive(false);
 		}
+	}
+
+	Dictionary<int, TileData> GetTileSet(string path) {
+		// Get a dictionary of tile prefabs, indexed by name.
+		Dictionary<string, GameObject> tiles = new Dictionary<string, GameObject>();
+		foreach (string guid in AssetDatabase.FindAssets("t:prefab", new string[] {"Assets/Prefabs/Tiles"})) {
+			GameObject prefab = (GameObject)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), typeof(GameObject));
+			tiles.Add(prefab.name, prefab);
+		}
+
+		// Read the tileset file and return a map of tile prefabs, indexed by their tile id.
+		Dictionary<int, TileData> tileMap = new Dictionary<int, TileData>();
+		XmlDocument tileset = new XmlDocument();
+		tileset.LoadXml(File.ReadAllText(path));
+		foreach (XmlNode tile in tileset.GetElementsByTagName("tile")) {
+			XmlNode rotation = tile.SelectSingleNode("properties/property[@name=\"rotation\"]/@value");
+			tileMap.Add(int.Parse(tile.Attributes["id"].Value), new TileData() {
+				prefab = tiles[tile.SelectSingleNode("properties/property[@name=\"name\"]/@value").Value],
+				rotation = rotation == null ? 0 : int.Parse(rotation.Value),
+			});
+		}
+		return tileMap;
 	}
 
 	void BuildLevel(XmlDocument xmlDoc, float yOffset) {
@@ -127,13 +107,14 @@ public class LevelBuilder : MonoBehaviour {
 	}
 
 	public List<XmlDocument> GetMapDocs() {
-		string[] guids = AssetDatabase.FindAssets("", new string[] {"Assets/Maps"});
-
-		return new List<XmlDocument>(guids.Select(guid => {
-			XmlDocument xmlDoc = new XmlDocument();
-			xmlDoc.LoadXml(File.ReadAllText(AssetDatabase.GUIDToAssetPath(guid)));
-			return xmlDoc;
-		}));
+		return new List<XmlDocument>(AssetDatabase.FindAssets("", new string[] {"Assets/Maps"})
+			.Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+			.Where(path => path.Contains(".tmx"))
+			.Select(path => {
+				XmlDocument xmlDoc = new XmlDocument();
+				xmlDoc.LoadXml(File.ReadAllText(path));
+				return xmlDoc;
+			}));
 	}
 
 	int[] getLayerTileData(XmlDocument xmlDoc, string layerName) {
@@ -152,19 +133,22 @@ public class LevelBuilder : MonoBehaviour {
 	}
 
 	void PlaceTile(int tileType, int markerType, GameObject level, int x, int z) {
-		if (tileMap.ContainsKey(tileType)) {
-			GameObject tilePrefab = tileMap[tileType];
-			GameObject tile = (GameObject)Instantiate(tilePrefab, new Vector3(x, 0, z), Quaternion.identity);
+		// Tile numbers in map files have an offset from tile ids in tileset files.
+		int offset = 1;
+
+		// Instantiate prefabs from the tile layer.
+		if (tileMap.ContainsKey(tileType - offset)) {
+			TileData tileData = tileMap[tileType - offset];
+			GameObject tile = (GameObject)Instantiate(tileData.prefab, new Vector3(x, 0, z), Quaternion.identity);
 			tile.transform.parent = level.transform;
+
+			if (tileData.rotation > 0) {
+				tile.transform.RotateAround(tile.transform.position, Vector3.up, 90f);
+			}
 
 			// Tile-specific options
 
-			if (tilePrefab == Door && tileType == 2) {
-				// Rotate door.
-				tile.transform.FindChild("Cylinder").RotateAround(tile.transform.position + new Vector3(0, 0.5f, 0), Vector3.up, 90f);
-			}
-
-			if (tilePrefab == Lift) {
+			if (tileData.prefab.name == "Lift") {
 				// Set lift index, to link it to other lifts.
 				if (markerType >= 41 && markerType <= 48) {
 					tile.GetComponent<Lift>().liftIndex = markerType - 41;
@@ -172,10 +156,11 @@ public class LevelBuilder : MonoBehaviour {
 			}
 		}
 
-		if (markerMap.ContainsKey(markerType)) {
-			GameObject objPrefab = markerMap[markerType];
-			GameObject obj = (GameObject)Instantiate(objPrefab, new Vector3(x, 0.5f, z), Quaternion.identity);
-			obj.transform.parent = level.transform;
+		// Instantiate prefabs from the marker layer.
+		if (tileMap.ContainsKey(markerType - offset)) {
+			TileData tileData = tileMap[markerType - offset];
+			GameObject tile = (GameObject)Instantiate(tileData.prefab, new Vector3(x, 0, z), Quaternion.identity);
+			tile.transform.parent = level.transform;
 		}
 	}
 

@@ -5,8 +5,7 @@
   <property name="Droid200" type="int" value="2"/>
   <property name="Name" value="Repairs"/>
  </properties>
- <tileset firstgid="1" source="../../tiled/tiles.tsx"/>
- <tileset firstgid="33" source="../../tiled/markers.tsx"/>
+ <tileset firstgid="1" source="tiles.tsx"/>
  <layer name="tiles" width="38" height="16">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

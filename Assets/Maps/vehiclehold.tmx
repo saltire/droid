@@ -3,8 +3,7 @@
  <properties>
   <property name="Name" value="Vehicle Hold"/>
  </properties>
- <tileset firstgid="1" source="../../tiled/tiles.tsx"/>
- <tileset firstgid="33" source="../../tiled/markers.tsx"/>
+ <tileset firstgid="1" source="tiles.tsx"/>
  <layer name="tiles" width="38" height="16">
   <data encoding="csv">
 0,0,0,0,0,0,8,5,5,5,5,5,13,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,7,0,0,0,0,0,0,
