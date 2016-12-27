@@ -9,7 +9,7 @@ using System.Xml;
 public class LevelBuilder : MonoBehaviour {
 	public GameObject Level;
 
-	public float heightInterval = 20f;
+	public float zInterval = 20f;
 
 	public List<int> defaultDroidTypes;
 
@@ -31,7 +31,7 @@ public class LevelBuilder : MonoBehaviour {
 		// Build a new level for each map.
 		List<XmlDocument> mapDocs = GetMapDocs();
 		for (int i = 0; i < mapDocs.Count; i++) {
-			BuildLevel(mapDocs[i], heightInterval * i);
+			BuildLevel(mapDocs[i], zInterval * i);
 		}
 
 		// Build the nav mesh.
@@ -39,6 +39,9 @@ public class LevelBuilder : MonoBehaviour {
 
 		// Connect lifts between levels.
 		ConnectLifts();
+
+		// Bake lightmaps.
+		Lightmapping.Bake();
 
 		// Disable all levels.
 		foreach (Transform level in transform) {
@@ -68,7 +71,7 @@ public class LevelBuilder : MonoBehaviour {
 		return tileMap;
 	}
 
-	void BuildLevel(XmlDocument xmlDoc, float yOffset) {
+	void BuildLevel(XmlDocument xmlDoc, float zOffset) {
 		// Load the Tiled map tag from the XML document.
 		XmlNode mapNode = xmlDoc.SelectSingleNode("map");
 		int width = int.Parse(mapNode.Attributes["width"].Value);
@@ -103,7 +106,7 @@ public class LevelBuilder : MonoBehaviour {
 		}
 
 		// Move the level up.
-		level.transform.Translate(Vector3.up * yOffset);
+		level.transform.Translate(Vector3.forward * zOffset);
 	}
 
 	public List<XmlDocument> GetMapDocs() {
@@ -143,7 +146,7 @@ public class LevelBuilder : MonoBehaviour {
 			tile.transform.parent = level.transform;
 
 			if (tileData.rotation > 0) {
-				tile.transform.RotateAround(tile.transform.position, Vector3.up, 90f);
+				tile.transform.RotateAround(tile.transform.position, Vector3.up, tileData.rotation * 90f);
 			}
 
 			// Tile-specific options

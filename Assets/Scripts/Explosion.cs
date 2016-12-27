@@ -5,21 +5,29 @@ public class Explosion : MonoBehaviour {
 
 	float elapsedTime = 0;
 
-	Renderer render;
-	Color originalColor;
-	Color finalColor;
+	Renderer exRenderer;
+	Light exLight;
+
+	float originalAlpha;
+	float originalIntensity;
 
 	void Start() {
-		render = GetComponent<Renderer>();
-		originalColor = render.material.color;
-		finalColor = render.material.color;
-		finalColor.a = 0;
+		exRenderer = GetComponent<Renderer>();
+		exLight = GetComponent<Light>();
+
+		originalAlpha = exRenderer.material.color.a;
+		originalIntensity = exLight.intensity;
 	}
-	
+
 	void Update() {
 		elapsedTime += Time.deltaTime;
+		float lightness = 1 - elapsedTime / explosionTime;
 
-		render.material.color = Color.Lerp(originalColor, finalColor, elapsedTime / explosionTime);
+		Color newColor = exRenderer.material.color;
+		newColor.a = originalAlpha * lightness;
+		exRenderer.material.color = newColor;
+
+		exLight.intensity = originalIntensity * lightness;
 
 		if (elapsedTime > explosionTime) {
 			Destroy(gameObject);

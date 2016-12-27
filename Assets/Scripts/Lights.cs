@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 
 public class Lights : MonoBehaviour {
-	public Color lightColor = new Color(0.1f, 0.5f, 0.2f);
-	public Color darkColor = new Color(0.1f, 0.1f, 0.1f);
 	public float darkenTime = 1f;
 
-	List<GameObject> blocks = new List<GameObject>();
+	List<Renderer> blocks = new List<Renderer>();
+	Color lightColor = Color.clear;
 	float offTime;
 
 	void Start() {
 		foreach (Transform child in GetComponentsInChildren<Transform>()) {
 			if (child.tag == "Solid") {
-				blocks.Add(child.gameObject);
+				Renderer block = child.GetComponent<Renderer>();
+				blocks.Add(block);
+
+				if (lightColor == Color.clear) {
+					lightColor = block.material.GetColor("_EmissionColor");
+				}
+				DynamicGI.SetEmissive(block, lightColor);
 			}
 		}
 	}
@@ -35,10 +40,11 @@ public class Lights : MonoBehaviour {
 
 	void Update() {
 		if (offTime > Time.time) {
-			Color color = Color.Lerp(lightColor, darkColor, (1 - offTime + Time.time) / darkenTime);
+			Color color = Color.Lerp(lightColor, Color.clear, (1 - offTime + Time.time) / darkenTime);
 
-			foreach (GameObject block in blocks) {
-				block.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+			foreach (Renderer block in blocks) {
+				block.material.SetColor("_EmissionColor", color);
+				DynamicGI.SetEmissive(block, color);
 			}
 		}
 	}

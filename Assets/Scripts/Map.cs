@@ -80,10 +80,14 @@ public class Map : MonoBehaviour {
 							otherLift.TemporarilyDisable();
 							level.gameObject.SetActive(true);
 
+							// Move player to destination lift.
 							GameObject player = GameObject.FindGameObjectWithTag("Player");
 							player.GetComponent<Rigidbody>().velocity = Vector3.zero;
 							player.transform.parent = level;
 							player.transform.position = otherLift.transform.position + new Vector3(0, 0.5f, 0);
+
+							// Reset camera on player.
+							GameObject.FindGameObjectWithTag("MainCamera").GetComponent<PlayerCamera>().LookAtPlayer(player.transform);
 						}
 					}
 

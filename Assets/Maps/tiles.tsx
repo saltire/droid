@@ -33,61 +33,61 @@
  </tile>
  <tile id="6">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall Corner"/>
    <property name="rotation" type="int" value="1"/>
   </properties>
  </tile>
  <tile id="7">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall Corner"/>
    <property name="rotation" type="int" value="0"/>
   </properties>
  </tile>
  <tile id="8">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall Corner"/>
    <property name="rotation" type="int" value="3"/>
   </properties>
  </tile>
  <tile id="9">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall Corner"/>
    <property name="rotation" type="int" value="2"/>
   </properties>
  </tile>
  <tile id="10">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall T"/>
    <property name="rotation" type="int" value="2"/>
   </properties>
  </tile>
  <tile id="11">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall T"/>
    <property name="rotation" type="int" value="1"/>
   </properties>
  </tile>
  <tile id="12">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall T"/>
    <property name="rotation" type="int" value="0"/>
   </properties>
  </tile>
  <tile id="13">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall T"/>
    <property name="rotation" type="int" value="3"/>
   </properties>
  </tile>
  <tile id="14">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall X"/>
    <property name="rotation" type="int" value="0"/>
   </properties>
  </tile>
  <tile id="15">
   <properties>
-   <property name="name" value="Wall"/>
+   <property name="name" value="Wall Column"/>
    <property name="rotation" type="int" value="0"/>
   </properties>
  </tile>

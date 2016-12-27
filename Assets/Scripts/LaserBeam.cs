@@ -12,16 +12,17 @@ public class LaserBeam : Weapon {
 	}
 
 	public void OnChildCollision(Collider other) {
-		if (other.tag == "Solid") {
-			Destroy(gameObject);
-		}
-		else if ((other.tag == "Droid" || other.tag == "Player") && other.gameObject != origin) {
-			Destroy(gameObject);
+		if (other.gameObject != origin) {
+			if (!other.isTrigger) {
+				Destroy(gameObject);
+			}
 
-			Health target = other.GetComponent<Health>();
-			if (!targetsHit.Contains(target)) {
-				targetsHit.Add(target);
-				target.Damage(damage);
+			if ((other.tag == "Droid" || other.tag == "Player")) {
+				Health target = other.GetComponent<Health>();
+				if (!targetsHit.Contains(target)) {
+					targetsHit.Add(target);
+					target.Damage(damage);
+				}
 			}
 		}
 	}
