@@ -95,6 +95,7 @@ MonoBehaviour:
   origin: {fileID: 0}
   damage: 1
   defaultCooldownTime: 1
+  destroyOnHit: 0
   effectLength: 0.25
   flashLength: 0.05
 --- !u!135 &135892054896292360

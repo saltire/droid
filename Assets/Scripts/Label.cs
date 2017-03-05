@@ -9,6 +9,6 @@ public class Label : MonoBehaviour {
 	}
 
 	void LateUpdate() {
-		transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 1, transform.rotation.eulerAngles.z);
+		transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, 0, transform.rotation.eulerAngles.z);
 	}
 }

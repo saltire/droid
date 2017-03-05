@@ -8,7 +8,6 @@ public class Disruptor : Weapon {
 	float killTime;
 	float nextFlashTime;
 	Material mat;
-	List<Health> targetsHit = new List<Health>();
 
 	void Start() {
 		killTime = Time.time + effectLength;
