@@ -25,15 +25,4 @@ public class Disruptor : Weapon {
 			mat.SetColor("_EmissionColor", mat.GetColor("_EmissionColor") == Color.black ? Color.white : Color.black);
 		}
 	}
-
-	void OnTriggerEnter(Collider other) {
-		if (other.gameObject != origin) {
-			Health target = other.GetComponent<Health>();
-			// Deal damage to each target once only.
-			if (target != null && !targetsHit.Contains(target)) {
-				targetsHit.Add(target);
-				target.Damage(damage);
-			}
-		}
-	}
 }

@@ -10,7 +10,7 @@ public abstract class Weapon : MonoBehaviour {
 
 	protected List<Health> targetsHit = new List<Health>();
 
-	public virtual void OnTriggerCollision(Collider other) {
+	public virtual void OnTriggerEnter(Collider other) {
 		if (other.gameObject != origin) {
 			// Optionally destroy if it hits any non-trigger collider.
 			if (!other.isTrigger && destroyOnHit) {
@@ -22,6 +22,17 @@ public abstract class Weapon : MonoBehaviour {
 			if (target != null && !targetsHit.Contains(target)) {
 				targetsHit.Add(target);
 				target.Damage(damage);
+				if (origin.tag == "Player") {
+				}
+			}
+		}
+	}
+
+	public virtual void OnTriggerExit(Collider other) {
+		if (other.gameObject != origin) {
+			Health target = other.GetComponent<Health>();
+			if (targetsHit.Contains(target)) {
+				targetsHit.Remove(target);
 			}
 		}
 	}

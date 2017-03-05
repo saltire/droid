@@ -18,8 +18,8 @@ public class Sabre : Weapon {
 		transform.parent = origin.transform;
 
 		direction = transform.rotation.eulerAngles.y > 180 ? -1 : 1;
-		startAngle = transform.rotation.eulerAngles.y - windupArcLength * direction;
 		totalArcLength = swingArcLength + windupArcLength * 2;
+		startAngle = transform.rotation.eulerAngles.y - totalArcLength / 2 * direction;
 
 		cylinder = transform.FindChild("Cylinder");
 		sphere = transform.FindChild("Sphere");
@@ -47,7 +47,7 @@ public class Sabre : Weapon {
 		cylinder.localScale = new Vector3(initialScale.x, initialScale.y * length, initialScale.z);
 		cylinder.localPosition = Vector3.forward * initialScale.y * length;
 		sphere.localPosition = Vector3.forward * initialScale.y * length * 2;
-		// trail.transform.localPosition = Vector3.forward * initialScale.y * length;
+		trail.transform.localPosition = Vector3.forward * initialScale.y * length;
 		trail.widthMultiplier = initialScale.y * length * 2;
 	}
 }

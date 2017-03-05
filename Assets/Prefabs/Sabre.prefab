@@ -332,7 +332,7 @@ MonoBehaviour:
   destroyOnHit: 0
   duration: 0.5
   windupArcLength: 90
-  swingArcLength: 360
+  swingArcLength: 180
 --- !u!114 &114665234589023112
 MonoBehaviour:
   m_ObjectHideFlags: 1
