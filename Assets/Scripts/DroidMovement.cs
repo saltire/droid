@@ -7,9 +7,12 @@ public class DroidMovement : MonoBehaviour {
 	int currentPoint;
 	float waitTime = 2f;
 	float timeWaited = 0f;
+	float waypointThreshold = 0.8f;
 
 	void Start() {
 		agent = GetComponent<NavMeshAgent>();
+		agent.updatePosition = false;
+
 		waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
 	}
 
@@ -24,10 +27,13 @@ public class DroidMovement : MonoBehaviour {
 		}
 		else {
 			// Check if we are at the current destination, and if so set a new one.
-			if ((transform.position - agent.destination).magnitude < 0.8f) {
+			if ((transform.position - agent.destination).magnitude < waypointThreshold) {
 				PickDestination();
 			}
 		}
+
+		// Manually set the droid's X/Z position.
+		transform.position = new Vector3(agent.nextPosition.x, 0.5f, agent.nextPosition.z);
 	}
 
 	void PickDestination() {

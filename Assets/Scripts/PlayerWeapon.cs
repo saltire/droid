@@ -2,7 +2,6 @@
 
 public class PlayerWeapon : MonoBehaviour {
 	public Weapon defaultWeapon;
-	public float defaultCooldownTime = 0.5f;
 
 	Weapon weapon;
 	float cooldownTime;
@@ -11,12 +10,12 @@ public class PlayerWeapon : MonoBehaviour {
 	bool fireReleased = true;
 
 	void Start() {
-		SetWeapon(defaultWeapon, defaultCooldownTime);
+		SetWeapon(defaultWeapon, defaultWeapon.defaultCooldownTime);
 	}
 
 	public void SetWeapon(Weapon newWeapon, float newCooldownTime) {
 		weapon = newWeapon != null ? newWeapon : defaultWeapon;
-		cooldownTime = newCooldownTime > 0 ? newCooldownTime : defaultCooldownTime;
+		cooldownTime = newCooldownTime > 0 ? newCooldownTime : defaultWeapon.defaultCooldownTime;
 	}
 
 	void Update() {
