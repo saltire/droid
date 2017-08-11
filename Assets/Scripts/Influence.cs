@@ -15,7 +15,7 @@ public class Influence : MonoBehaviour {
 
 	void Start() {
 		minigame = GameObject.Find("Minigame").GetComponent<Minigame>();
-		foreach (Renderer renderer in transform.FindChild("Body").GetComponentsInChildren<Renderer>()) {
+		foreach (Renderer renderer in transform.Find("Body").GetComponentsInChildren<Renderer>()) {
 			materials.Add(renderer.material);
 		}
 	}

@@ -21,8 +21,8 @@ public class Sabre : Weapon {
 		totalArcLength = swingArcLength + windupArcLength * 2;
 		startAngle = transform.rotation.eulerAngles.y - totalArcLength / 2 * direction;
 
-		cylinder = transform.FindChild("Cylinder");
-		sphere = transform.FindChild("Sphere");
+		cylinder = transform.Find("Cylinder");
+		sphere = transform.Find("Sphere");
 		initialScale = cylinder.localScale;
 		trail = GetComponentInChildren<TrailRenderer>();
 
