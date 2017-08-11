@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 
 public class DroidType : MonoBehaviour {
-	public Weapon smallWeapon;
-	public Weapon largeWeapon;
+	public Weapon Disruptor;
+	public Weapon LaserBeam;
+	public Weapon LaserBeamDouble;
+	public Weapon Sabre;
 
 	int type = 1;
 
@@ -15,12 +17,18 @@ public class DroidType : MonoBehaviour {
 		DroidStats stats = new DroidStats();
 
 		if (type == 200) {
-			stats.weapon = smallWeapon;
+			stats.weapon = LaserBeam;
 			stats.cooldownTime = 1f;
 		}
 		else if (type == 300) {
-			stats.weapon = largeWeapon;
+			stats.weapon = LaserBeamDouble;
 			stats.cooldownTime = 0.75f;
+		}
+		else if (type == 400) {
+			stats.weapon = Sabre;
+		}
+		else if (type == 500) {
+			stats.weapon = Disruptor;
 		}
 
 		return stats;

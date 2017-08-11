@@ -203,6 +203,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!23 &23000013964939086
 MeshRenderer:
@@ -234,6 +235,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!23 &23357206682596248
 MeshRenderer:
@@ -265,6 +267,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
 --- !u!33 &33000011787156284
 MeshFilter:
@@ -365,9 +368,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3aee9380ce4cbb4db983d832fbc0a06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smallWeapon: {fileID: 11438142, guid: 51cb3d5edb05e5f43bcdb20bd9a5f0f5, type: 2}
-  largeWeapon: {fileID: 114000012094820412, guid: 04321ae23a0b18149866b3667746cb0b,
+  Disruptor: {fileID: 114837256624542342, guid: d86c7823501574c4292026c161c64e55,
     type: 2}
+  LaserBeam: {fileID: 11438142, guid: 51cb3d5edb05e5f43bcdb20bd9a5f0f5, type: 2}
+  LaserBeamDouble: {fileID: 114000012094820412, guid: 04321ae23a0b18149866b3667746cb0b,
+    type: 2}
+  Sabre: {fileID: 114326221594085314, guid: ca3f5724e6e1b9b46b861def2366d9cd, type: 2}
 --- !u!114 &114000012667085012
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -449,6 +455,7 @@ NavMeshAgent:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000010699975312}
   m_Enabled: 1
+  m_AgentTypeID: 0
   m_Radius: 0.2
   m_Speed: 1
   m_Acceleration: 8
